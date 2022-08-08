@@ -1,0 +1,22 @@
+{
+  "name": "fighting-game",
+  "version": "0.0.1-SNAPSHOT",
+  "description": "Juego de pelea versus local.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MartinFondovila/TIP.git"
+  },
+  "author": "Martín Almada Fondovila",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MartinFondovila/TIP/issues"
+  },
+  "homepage": "https://github.com/MartinFondovila/TIP#readme",
+  "dependencies": {
+    "phaser": "^3.55.2"
+  }
+}
