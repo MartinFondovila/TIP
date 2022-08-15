@@ -1,0 +1,196 @@
+{
+    "anims": [
+        {
+            "key": "adventurerdying",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile27"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile28"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile29"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile30"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile31"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile32"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile33"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile34"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile35"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile36"
+                }
+            ]
+        },
+        {
+            "key": "adventurerattacking",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile19"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile20"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile21"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile22"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile23"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile24"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile25"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile26"
+                }
+            ]
+        },
+        {
+            "key": "adventureridle",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile15"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile16"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile17"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile18"
+                }
+            ]
+        },
+        {
+            "key": "adventurerfalling",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile13"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile14"
+                }
+            ]
+        },
+        {
+            "key": "adventurerjumping",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile07"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile08"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile09"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile10"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile11"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile12"
+                }
+            ]
+        },
+        {
+            "key": "adventurerwalking",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "adventurer",
+                    "frame": "tile01"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile02"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile03"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile04"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile05"
+                },
+                {
+                    "key": "adventurer",
+                    "frame": "tile06"
+                }
+            ]
+        }
+    ]
+}
