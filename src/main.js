@@ -6,16 +6,30 @@ const config = {
   version: "0.0.1",
 
   type: Phaser.AUTO,
-  width: 640,
-  height: 360,
-  parent: "contenedor",
+  scale: {
+    parent: "phaser_container",
+    width: 640,
+    height: 360,
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
   pixelArt: true,
-  backgroundColor: "#34495e",
 
   banner: {
     hidePhaser: false,
     text: "#fff00f",
     background: ["#16a085", "#2ecc71", "#e74c3c", "#000000"],
+  },
+
+  physics: {
+    default: "arcade",
+    arcade: {
+      // True para ver las hitboxes
+      debug: true,
+      gravity: {
+        y: 2000,
+      },
+    },
   },
 
   scene: [BootLoader],
