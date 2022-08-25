@@ -7,8 +7,6 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     }
     super(scene, x, y, texture);
     scene.physics.world.enable(this);
-    this.body.setSize(70, 110);
-    this.body.setOffset(65, 33);
     this.controls = controls;
     this.healthPoints = healthPoints;
     this.blockingDefense = blockingDefense;
@@ -22,8 +20,16 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   // Metodo abstracto
   attack(animation) {
     if (this.canAttack) {
-      this.isAttacking = true;
-      this.anims.play(animation, true);
+      this.prevAnim = "attack";
+      this.attacking = true;
+      this.anims
+        .play(animation, true)
+        .on("animationcomplete", () => {
+          this.attacking = false;
+        })
+        .on("animationrestart", () => {
+          this.attacking = false;
+        });
     }
   }
 
@@ -48,7 +54,12 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   idle(animation) {
     this.setVelocityX(0);
-    if (this.prevAnim !== "idle" && !this.isJumping() && !this.isFalling()) {
+    if (
+      this.prevAnim !== "idle" &&
+      !this.isJumping() &&
+      !this.isFalling() &&
+      !this.isAttacking()
+    ) {
       this.prevAnim = "idle";
       this.anims.play(animation);
       console.log(this.prevAnim);
@@ -178,6 +189,11 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       this.jump();
     } else if (this.body.blocked.down) {
       this.jumping = false;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.controls.attack)) {
+      this.attacking = true;
+      this.attack();
     }
   }
 }

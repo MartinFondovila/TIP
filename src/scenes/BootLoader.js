@@ -1,4 +1,5 @@
 import { Knight } from "../classes/knight.js";
+import { Ninja } from "../classes/ninja.js";
 
 class BootLoader extends Phaser.Scene {
   constructor() {
@@ -20,6 +21,12 @@ class BootLoader extends Phaser.Scene {
       "adventurer/adventurer_atlas.json"
     );
     this.load.animation("adventurerAnim", "adventurer/adventurer_anim.json");
+    this.load.atlas(
+      "minotaur",
+      "minotaur/minotaur.png",
+      "minotaur/minotaur_atlas.json"
+    );
+    this.load.animation("minotaurAnim", "minotaur/minotaur_anim.json");
 
     this.load.on("complete", () => {
       const fontData = this.cache.json.get("fontData");
@@ -58,24 +65,23 @@ class BootLoader extends Phaser.Scene {
       left: KeyCodes.LEFT,
       right: KeyCodes.RIGHT,
       jump: KeyCodes.UP,
+      attack: KeyCodes.L,
     });
 
     //let teclaa = this.input.keyboard.addKey("a");
     //teclaa.
 
     this.player1 = new Knight(this, 200, 100, Player1Controls);
-    console.log(this.physics);
     this.add.existing(this.player1);
     this.player1.setCollideWorldBounds(true);
-    this.physics.add.collider([this.player1], this.wall_floor);
-    // this.player2 = new Fighter(this, 200, 300, Player2Controls, "tomato");
-    // this.player2.setScale(4);
-    // this.add.existing(this.player2);
-    // this.player2.setCollideWorldBounds(true);
+    this.player2 = new Ninja(this, 200, 100, Player2Controls);
+    this.add.existing(this.player2);
+    this.player2.setCollideWorldBounds(true);
+    this.physics.add.collider([this.player1, this.player2], this.wall_floor);
   }
   update(time, delta) {
     this.player1.update();
-    // this.player2.update();
+    this.player2.update();
   }
 }
 
