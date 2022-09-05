@@ -1,3 +1,5 @@
+import { StateMachine } from "./stateMachine/stateMachine.js";
+
 export class Fighter extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, controls, texture, healthPoints, blockingDefense) {
     if (new.target === Fighter) {
@@ -9,77 +11,211 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.enable(this);
     this.controls = controls;
     this.healthPoints = healthPoints;
+    this.baseDamage;
+    this.enemy;
     this.blockingDefense = blockingDefense;
+    this.stateMachine = new StateMachine(this);
+    this.animationsMap = new Map();
+    this.setAnimationsOnMap();
     this.immunity = false;
     this.blocking = false;
-    this.attacking = false;
-    this.jumping = false;
-    this.prevAnim = "";
+    this.attackHitbox;
+
+    this.stateMachine
+      .addState("idle", {
+        onEnter: this.idleOnEnter,
+        onUpdate: this.idleOnUpdate,
+      })
+      .addState("walk", {
+        onEnter: this.walkOnEnter,
+        onUpdate: this.walkOnUpdate,
+      })
+      .addState("jump", {
+        onEnter: this.jumpOnEnter,
+        onUpdate: this.jumpOnUpdate,
+      })
+      .addState("fall", {
+        onEnter: this.fallOnEnter,
+        onUpdate: this.fallOnUpdate,
+      })
+      .addState("attack", {
+        onEnter: this.attackOnEnter,
+        onUpdate: this.attackOnUpdate,
+      })
+      .addState("hit", {
+        onEnter: this.hitOnEnter,
+        onUpdate: this.hitOnUpdate,
+      })
+      .addState("defeated", {
+        onEnter: this.defeatedOnEnter,
+      })
+      .setState("idle");
+
+    // Revisar por que funciona :p
+    this.on(
+      "animationcomplete",
+      function (anim, frame) {
+        this.emit("animationcomplete_" + anim.key, anim, frame);
+      },
+      this
+    );
+
+    this.on("animationcomplete_" + this.animationsMap.get("attack"), () => {
+      this.stateMachine.setState("idle");
+    });
+
+    // this.on("animationstart_" + this.animationsMap.get("attack"), () => {
+    //   this.attackHitbox.body.enable = true;
+    //   this.attackHitbox.body.enable = false;
+    // });
   }
 
-  // Metodo abstracto
-  attack(animation) {
-    if (this.canAttack) {
-      this.prevAnim = "attack";
-      this.attacking = true;
-      this.anims
-        .play(animation, true)
-        .on("animationcomplete", () => {
-          this.attacking = false;
-        })
-        .on("animationrestart", () => {
-          this.attacking = false;
-        });
+  idleOnEnter() {
+    this.setVelocityX(0);
+    this.anims.play(this.animationsMap.get("idle"));
+  }
+
+  idleOnUpdate() {
+    if (this.isFalling()) {
+      this.stateMachine.setState("fall");
+    }
+
+    if (this.controls.left.isDown || this.controls.right.isDown) {
+      this.stateMachine.setState("walk");
+    }
+
+    if (
+      Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
+      !this.isImmune()
+    ) {
+      this.stateMachine.setState("attack");
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.controls.jump)) {
+      this.stateMachine.setState("jump");
     }
   }
 
-  canAttack() {
-    return !this.isImmune && !this.isAttacking;
+  walkOnEnter() {
+    this.anims.play(this.animationsMap.get("walk"));
   }
 
-  isAttacking() {
-    return this.attacking;
+  walkOnUpdate() {
+    if (this.isFalling()) {
+      this.stateMachine.setState("fall");
+    }
+
+    if (this.controls.left.isDown) {
+      this.walkLeft();
+    } else if (this.controls.right.isDown) {
+      this.walkRight();
+    } else {
+      this.stateMachine.setState("idle");
+    }
+
+    if (
+      Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
+      !this.isImmune()
+    ) {
+      this.stateMachine.setState("attack");
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.controls.jump)) {
+      this.stateMachine.setState("jump");
+    }
   }
+
+  hitOnEnter() {
+    this.attackHitbox.body.enable = false;
+    this.recieveDamage(this.enemy.baseDamage);
+    this.becomeImmune(1500, 0xff0000);
+  }
+
+  hitOnUpdate() {
+    this.stateMachine.setState("idle");
+  }
+
+  fallOnEnter() {
+    this.anims.play(this.animationsMap.get("fall"));
+  }
+
+  defeatedOnEnter() {
+    this.body.enable = false;
+    this.anims.play(this.animationsMap.get("defeated"));
+  }
+
+  fallOnUpdate() {
+    if (this.body.blocked.down) {
+      this.stateMachine.setState("idle");
+    } else if (this.controls.left.isDown) {
+      this.walkLeft();
+    } else if (this.controls.right.isDown) {
+      this.walkRight();
+    }
+  }
+
+  attackOnEnter() {
+    this.setVelocityX(0);
+    this.anims.play(this.animationsMap.get("attack"));
+    this.attackHitbox.body.x = !this.flipX
+      ? this.body.x + this.width * 0.2
+      : this.body.x - this.width * 0.2;
+    this.attackHitbox.body.y = this.body.y;
+    this.scene.physics.world.enableBody(this.attackHitbox);
+  }
+
+  // Revisar bien cuando deshabilitar la hitbox del ataque
+  attackOnUpdate() {
+    this.attackHitbox.body.enable = false;
+  }
+
+  jumpOnEnter() {
+    this.setVelocityY(-500);
+    this.anims.play(this.animationsMap.get("jump"));
+  }
+
+  jumpOnUpdate() {
+    if (this.isFalling()) {
+      this.stateMachine.setState("fall");
+    }
+
+    if (this.body.blocked.down) {
+      this.stateMachine.setState("idle");
+    } else if (this.controls.left.isDown) {
+      this.walkLeft();
+    } else if (this.controls.right.isDown) {
+      this.walkRight();
+    }
+  }
+
+  // Metodo abstracto que deben implementar las subclases
+  setAnimationsOnMap() {}
 
   // Metodo abstracto
   block() {}
 
-  // Metodo abstracto
-  fall(animation) {
-    if (this.prevAnim !== "fall") {
-      this.prevAnim = "fall";
-      this.anims.play(animation);
-    }
-  }
-
-  idle(animation) {
-    this.setVelocityX(0);
-    if (
-      this.prevAnim !== "idle" &&
-      !this.isJumping() &&
-      !this.isFalling() &&
-      !this.isAttacking()
-    ) {
-      this.prevAnim = "idle";
-      this.anims.play(animation);
-      console.log(this.prevAnim);
-    }
-  }
-
   recieveDamage(damagePoints) {
     if (!this.isImmune()) {
+      console.log("daño: " + damagePoints);
       this.recieveDamageAux(damagePoints);
     }
   }
 
   recieveDamageAux(damagePoints) {
     if (this.canRecieveFullDamage(damagePoints)) {
-      this.calculateDamage(damagePoints);
+      this.healthPoints -= this.calculateDamage(damagePoints);
     } else {
       this.healthPoints = 0;
     }
-  }
 
+    if (this.healthPoints === 0) {
+      console.log("muerto");
+      this.stateMachine.setState("defeated");
+    }
+  }
+  // VER QUE PASA SI SE GOLPEAN AL MISMO TIEMPO
+  // DESACTIVAR LAS HITBOX
+  // PUEDE HABER EMPATE?
   canRecieveFullDamage(damagePoints) {
     if (this.isBlocking) {
       return this.healthPoints - (damagePoints - this.blockingDefense) > 0;
@@ -90,9 +226,9 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   calculateDamage(damagePoints) {
     if (this.isBlocking()) {
-      return this.healthPoints - (damagePoints - this.blockingDefense);
+      return damagePoints - this.blockingDefense;
     } else {
-      return this.healthPoints - damagePoints;
+      return damagePoints;
     }
   }
 
@@ -102,10 +238,6 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   isBlocking() {
     return this.blocking;
-  }
-
-  isJumping() {
-    return this.jumping;
   }
 
   becomeImmune(milliseconds, tint) {
@@ -134,32 +266,20 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   // Redifinir en clase concreta para poner la animacion especifica
-  moveLeft(animation) {
+  walkLeft() {
     this.setFlip(true);
     this.setVelocityX(-160);
-    if (this.prevAnim !== "left" && !this.isJumping() && !this.isFalling()) {
-      this.prevAnim = "left";
-      this.anims.play(animation);
-    }
   }
 
   // Redifinir en clase concreta para poner la animacion especifica
-  moveRight(animation) {
+  walkRight() {
     this.setFlip(false);
     this.setVelocityX(160);
-    if (this.prevAnim !== "right" && !this.isJumping()) {
-      this.prevAnim = "right";
-      this.anims.play(animation);
-    }
   }
 
-  // Redifinir en clase concreta para poner la animacion especifica
-  jump(animation) {
-    this.setVelocityY(-900);
-    if (this.prevAnim !== "jump") {
-      this.prevAnim = "jump";
-      this.anims.play(animation);
-    }
+  idle() {
+    this.setVelocityX(0);
+    this.anims.play(this.animationsMap.get("idle"));
   }
 
   isFalling() {
@@ -169,31 +289,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   // Metodo abstracto
   specialAttack() {}
 
-  //Buscar Controles y animaciones mas consistentes
-  update() {
-    if (this.isFalling()) {
-      this.fall();
-    } else if (this.controls.left.isDown) {
-      this.moveLeft();
-    } else if (this.controls.right.isDown) {
-      this.moveRight();
-    } else {
-      this.idle();
-    }
-
-    if (
-      Phaser.Input.Keyboard.JustDown(this.controls.jump) &&
-      !this.isJumping()
-    ) {
-      this.jumping = true;
-      this.jump();
-    } else if (this.body.blocked.down) {
-      this.jumping = false;
-    }
-
-    if (Phaser.Input.Keyboard.JustDown(this.controls.attack)) {
-      this.attacking = true;
-      this.attack();
-    }
+  update(deltaTime) {
+    this.stateMachine.update(deltaTime);
   }
 }

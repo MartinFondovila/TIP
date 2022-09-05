@@ -27,7 +27,7 @@ const config = {
       // True para ver las hitboxes
       debug: true,
       gravity: {
-        y: 2000,
+        y: 800,
       },
     },
   },
