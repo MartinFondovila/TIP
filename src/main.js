@@ -1,4 +1,6 @@
 import BootLoader from "./scenes/BootLoader.js";
+import FightScene from "./scenes/FightScene.js";
+import PauseMenuScene from "./scenes/PauseMenuScene.js";
 
 const config = {
   title: "Curso Phaser",
@@ -32,7 +34,7 @@ const config = {
     },
   },
 
-  scene: [BootLoader],
+  scene: [BootLoader, FightScene, PauseMenuScene],
 };
 
 const game = new Phaser.Game(config);

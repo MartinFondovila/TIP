@@ -1,4 +1,6 @@
-import { Fighter } from "../classes/fighter.js";
+import { Attack } from "../attack/attack.js";
+import { HealthBar } from "../healthBar/HealthBar.js";
+import { Fighter } from "./fighter.js";
 
 export class Knight extends Fighter {
   constructor(scene, x, y, controls) {
@@ -7,9 +9,12 @@ export class Knight extends Fighter {
     this.body.setSize(70, 110);
     this.body.setOffset(65, 33);
 
-    this.baseDamage = 10;
+    this.healthBar = new HealthBar(scene, 50, 0, this.healthPoints);
 
-    this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
+    this.attackHitbox = new Attack(scene, 0, 0, 32, 64, 10);
+
+    //this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
+
     scene.physics.add.existing(this.attackHitbox);
     this.attackHitbox.body.setAllowGravity(false);
     this.attackHitbox.body.enable = false;

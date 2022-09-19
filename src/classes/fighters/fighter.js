@@ -1,4 +1,4 @@
-import { StateMachine } from "./stateMachine/stateMachine.js";
+import { StateMachine } from "../stateMachine/stateMachine.js";
 
 export class Fighter extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, controls, texture, healthPoints, blockingDefense) {
@@ -11,7 +11,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     scene.physics.world.enable(this);
     this.controls = controls;
     this.healthPoints = healthPoints;
-    this.baseDamage;
+    this.healthBar;
     this.enemy;
     this.blockingDefense = blockingDefense;
     this.stateMachine = new StateMachine(this);
@@ -127,8 +127,8 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   hitOnEnter() {
     this.attackHitbox.body.enable = false;
-    this.recieveDamage(this.enemy.baseDamage);
-    this.becomeImmune(1500, 0xff0000);
+    this.recieveDamage(this.enemy.attackHitbox.baseDamage);
+    this.becomeImmune(1000, 0xff0000);
   }
 
   hitOnUpdate() {
@@ -140,7 +140,6 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   defeatedOnEnter() {
-    this.body.enable = false;
     this.anims.play(this.animationsMap.get("defeated"));
   }
 
@@ -198,6 +197,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     if (!this.isImmune()) {
       console.log("daño: " + damagePoints);
       this.recieveDamageAux(damagePoints);
+      this.healthBar.decrease(this.calculateDamage(damagePoints));
     }
   }
 
@@ -208,11 +208,26 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       this.healthPoints = 0;
     }
 
-    if (this.healthPoints === 0) {
+    if (this.isDefeated()) {
       console.log("muerto");
       this.stateMachine.setState("defeated");
     }
   }
+
+  disableControls() {
+    Object.values(this.controls).forEach(
+      (control) => (control.enabled = false)
+    );
+  }
+
+  enableControls() {
+    Object.values(this.controls).forEach((control) => (control.enabled = true));
+  }
+
+  isDefeated() {
+    return this.healthPoints === 0;
+  }
+
   // VER QUE PASA SI SE GOLPEAN AL MISMO TIEMPO
   // DESACTIVAR LAS HITBOX
   // PUEDE HABER EMPATE?
