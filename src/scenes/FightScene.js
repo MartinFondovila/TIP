@@ -22,6 +22,8 @@ class FightScene extends Phaser.Scene {
   create() {
     this.add.image(0, 0, "background").setOrigin(0);
 
+    this.add.image(100, 100, "Icons_05").setOrigin(0);
+
     this.wall_floor = this.physics.add.staticGroup();
 
     this.wall_floor.create(0, 0, "wall").setOrigin(0);
@@ -57,12 +59,12 @@ class FightScene extends Phaser.Scene {
     });
 
     // Jugador 1
-    this.player1 = new Knight(this, 200, 400, Player1Controls);
+    this.player1 = new Knight(this, 200, 100, Player1Controls);
     this.add.existing(this.player1);
     this.player1.setCollideWorldBounds(true);
 
     // Jugador 2
-    this.player2 = new Ninja(this, 590, 100, Player2Controls);
+    this.player2 = new Ninja(this, 200, 100, Player2Controls);
     this.add.existing(this.player2);
     this.player2.setCollideWorldBounds(true);
 
@@ -85,7 +87,7 @@ class FightScene extends Phaser.Scene {
       this,
       320,
       40,
-      5,
+      30,
       { fontSize: 60 },
       this.endMatch,
       this
@@ -96,12 +98,16 @@ class FightScene extends Phaser.Scene {
     this.physics.add.overlap(
       this.player1.attackHitbox,
       this.player2,
-      this.handleHit
+      this.handleHit,
+      null,
+      this
     );
     this.physics.add.overlap(
       this.player2.attackHitbox,
       this.player1,
-      this.handleHit
+      this.handleHit,
+      null,
+      this
     );
   }
 
@@ -140,17 +146,26 @@ class FightScene extends Phaser.Scene {
   handleHit(attackHitbox, player) {
     // Esto esta feo, definir bien lo de recibir daño
     player.enemy = attackHitbox.player;
-    console.log(this.player.healthPoints);
-    this.player2.stateMachine.setState("hit");
-    if (this.player.isDefeated()) {
+    console.log(player.healthPoints);
+    player.stateMachine.setState("hit");
+    if (player.isDefeated()) {
+      console.log(this.matchTimer);
       this.matchTimer.stopTimer();
       this.endMatch();
     }
   }
 
   handlePause() {
+    // REVISAR QUE SE STACKEAN LAS OPCIONES CUANDO VUELVO A LA ESCENA
     this.scene.pause();
-    this.scene.launch("PauseMenuScene");
+
+    if (!this.scene.isSleeping("PauseMenuScene")) {
+      console.log(!this.scene.isSleeping("PauseMenuScene"));
+      this.scene.launch("PauseMenuScene");
+    } else {
+      this.scene.wake("PauseMenuScene");
+    }
+
     this.scene.moveAbove("FightScene", "PauseMenuScene");
   }
 }

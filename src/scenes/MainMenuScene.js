@@ -1,6 +1,6 @@
-class PauseMenuScene extends Phaser.Scene {
+class MainMenuScene extends Phaser.Scene {
   constructor() {
-    super("PauseMenuScene");
+    super("MainMenuScene");
     this.Controls;
     this.options = [];
     this.selectedOption;
@@ -16,17 +16,17 @@ class PauseMenuScene extends Phaser.Scene {
     this.controls = this.input.keyboard.addKeys({
       moveUp: KeyCodes.UP,
       moveDown: KeyCodes.DOWN,
-      resume: KeyCodes.ESC,
       enter: KeyCodes.ENTER,
     });
 
+    // Ver si hay otra forma de settear el fondo
     this.cameras.main.setBackgroundColor("#000000");
 
     this.options.push(
-      this.add.text(225, 100, "Resume", { fontSize: 40 }).setTint(0xffff00)
+      this.add.text(225, 100, "Versus", { fontSize: 40 }).setTint(0xffff00)
     );
-    this.options.push(this.add.text(225, 150, "Sound", { fontSize: 40 }));
-    this.options.push(this.add.text(225, 200, "Controls", { fontSize: 40 }));
+    this.options.push(this.add.text(225, 150, "Options", { fontSize: 40 }));
+    this.options.push(this.add.text(225, 200, "Credits", { fontSize: 40 }));
 
     this.selectedOption = this.options[0];
 
@@ -35,22 +35,14 @@ class PauseMenuScene extends Phaser.Scene {
   }
 
   update() {
-    if (Phaser.Input.Keyboard.JustDown(this.controls.resume)) {
-      this.handleResume();
-    } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveUp)) {
+    if (Phaser.Input.Keyboard.JustDown(this.controls.moveUp)) {
       this.handleChangeOptionUp();
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveDown)) {
       this.handleChangeOptionDown();
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.enter)) {
+      this.handleEnterOnOption(this.selectedOption.text);
       console.log("Se selecciono la opción: " + this.selectedOption.text);
     }
-  }
-
-  handleResume() {
-    this.scene.moveAbove("PauseMenuScene", "FightScene");
-    this.resetSelectedOption();
-    this.scene.sleep();
-    this.scene.resume("FightScene");
   }
 
   handleChangeOptionDown() {
@@ -77,6 +69,30 @@ class PauseMenuScene extends Phaser.Scene {
     console.log(nextOptionIndex);
   }
 
+  handleEnterOnOption(option) {
+    switch (option) {
+      case "Versus":
+        this.switchScene("CharacterSelectionMenu");
+        break;
+      case "Options":
+        this.switchScene("OptionScene");
+        break;
+      case "Controls":
+        this.switchScene("ConfigControlsScene");
+        break;
+    }
+  }
+
+  switchScene(sceneName) {
+    if (!this.scene.isSleeping(sceneName)) {
+      this.scene.launch(sceneName);
+    } else {
+      this.scene.wake(sceneName);
+    }
+    this.scene.moveAbove("MainMenuScene", "sceneName");
+    this.scene.sleep();
+  }
+
   resetSelectedOption() {
     this.selectedOption.clearTint();
     this.selectedOption = this.options[0];
@@ -88,4 +104,4 @@ class PauseMenuScene extends Phaser.Scene {
   }
 }
 
-export default PauseMenuScene;
+export default MainMenuScene;

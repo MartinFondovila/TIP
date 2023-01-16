@@ -1,8 +1,3 @@
-import { Knight } from "../classes/fighters/knight.js";
-import { Ninja } from "../classes/fighters/ninja.js";
-import { MatchTimer } from "../classes/timer/MatchTimer.js";
-import { PreTimer } from "../classes/timer/PreTimer.js";
-
 class BootLoader extends Phaser.Scene {
   constructor() {
     super("BootLoaderScene");
@@ -12,7 +7,7 @@ class BootLoader extends Phaser.Scene {
   }
   preload() {
     this.load.setPath("./assets/");
-    this.load.image(["background", "floor", "wall"]);
+    this.load.image(["background", "floor", "wall", "Icons_05"]);
     this.load.image("font", "font/font.png");
     this.load.json("fontData", "font/font.json");
     this.load.atlas(
@@ -20,6 +15,12 @@ class BootLoader extends Phaser.Scene {
       "adventurer/adventurer.png",
       "adventurer/adventurer_atlas.json"
     );
+    this.load.aseprite(
+      "knight",
+      "KnightAtlas/Knight.png",
+      "KnightAtlas/KnightAtlas.json"
+    );
+    this.load.animation("knightAnin", "KnightAtlas/KnightAnims.json");
     this.load.animation("adventurerAnim", "adventurer/adventurer_anim.json");
     this.load.atlas(
       "minotaur",
@@ -34,11 +35,11 @@ class BootLoader extends Phaser.Scene {
         "pixelFont",
         Phaser.GameObjects.RetroFont.Parse(this, fontData)
       );
+      this.scene.start("FightScene");
     });
   }
-  create() {
-    this.scene.start("FightScene");
-  }
+
+  create() {}
 
   update(time, deltaTime) {}
 }

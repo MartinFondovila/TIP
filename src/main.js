@@ -1,6 +1,9 @@
 import BootLoader from "./scenes/BootLoader.js";
+import CharacterSelectionScene from "./scenes/CharacterSelectionScene.js";
 import FightScene from "./scenes/FightScene.js";
+import MainMenuScene from "./scenes/MainMenuScene.js";
 import PauseMenuScene from "./scenes/PauseMenuScene.js";
+import MapSelectionScene from "./scenes/MapSelectionScene.js";
 
 const config = {
   title: "Curso Phaser",
@@ -34,7 +37,14 @@ const config = {
     },
   },
 
-  scene: [BootLoader, FightScene, PauseMenuScene],
+  scene: [
+    BootLoader,
+    MainMenuScene,
+    MapSelectionScene,
+    FightScene,
+    CharacterSelectionScene,
+    PauseMenuScene,
+  ],
 };
 
 const game = new Phaser.Game(config);

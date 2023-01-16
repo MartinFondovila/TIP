@@ -127,6 +127,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   hitOnEnter() {
     this.attackHitbox.body.enable = false;
+    console.log(this.enemy);
     this.recieveDamage(this.enemy.attackHitbox.baseDamage);
     this.becomeImmune(1000, 0xff0000);
   }

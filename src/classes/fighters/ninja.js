@@ -9,9 +9,9 @@ export class Ninja extends Fighter {
     this.body.setOffset(33.5, 24);
     this.setScale(1.5);
 
-    this.healthBar = new HealthBar(scene, 250, 0, this.healthPoints);
+    this.healthBar = new HealthBar(scene, 50, 0, this.healthPoints);
 
-    this.attackHitbox = new Attack(scene, 0, 0, 32, 64, 10);
+    this.attackHitbox = new Attack(scene, 0, 0, 32, 64, 10, this);
 
     // this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
     scene.physics.add.existing(this.attackHitbox);
