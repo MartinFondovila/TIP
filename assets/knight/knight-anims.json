@@ -1,0 +1,156 @@
+{
+    "anims": [
+        {
+            "key": "knightIdle",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "0"
+                },
+                {
+                    "key": "knight",
+                    "frame": "1"
+                },
+                {
+                    "key": "knight",
+                    "frame": "2"
+                },
+                {
+                    "key": "knight",
+                    "frame": "3"
+                },
+                {
+                    "key": "knight",
+                    "frame": "4"
+                }
+            ]
+        },
+        {
+            "key": "knightDamaged",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "5"
+                },
+                {
+                    "key": "knight",
+                    "frame": "6"
+                },
+                {
+                    "key": "knight",
+                    "frame": "7"
+                },
+                {
+                    "key": "knight",
+                    "frame": "8"
+                }
+            ]
+        },
+        {
+            "key": "knightWalking",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "9"
+                },
+                {
+                    "key": "knight",
+                    "frame": "10"
+                },
+                {
+                    "key": "knight",
+                    "frame": "11"
+                },
+                {
+                    "key": "knight",
+                    "frame": "12"
+                },
+                {
+                    "key": "knight",
+                    "frame": "13"
+                },
+                {
+                    "key": "knight",
+                    "frame": "14"
+                },
+                {
+                    "key": "knight",
+                    "frame": "15"
+                },
+                {
+                    "key": "knight",
+                    "frame": "16"
+                }
+            ]
+        },
+        {
+            "key": "jumpingKnight",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "17"
+                },
+                {
+                    "key": "knight",
+                    "frame": "18"
+                },
+                {
+                    "key": "knight",
+                    "frame": "19"
+                }
+            ]
+        },
+        {
+            "key": "fallingKnight",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 15,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "20"
+                },
+                {
+                    "key": "knight",
+                    "frame": "21"
+                },
+                {
+                    "key": "knight",
+                    "frame": "22"
+                }
+            ]
+        },
+        {
+            "key": "attackingKnight",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "knight",
+                    "frame": "23"
+                },
+                {
+                    "key": "knight",
+                    "frame": "24"
+                },
+                {
+                    "key": "knight",
+                    "frame": "25"
+                }
+            ]
+        }
+    ]
+}

@@ -1,15 +1,19 @@
-import BootLoader from "./scenes/BootLoader.js";
-import CharacterSelectionScene from "./scenes/CharacterSelectionScene.js";
-import FightScene from "./scenes/FightScene.js";
-import MainMenuScene from "./scenes/MainMenuScene.js";
-import PauseMenuScene from "./scenes/PauseMenuScene.js";
-import MapSelectionScene from "./scenes/MapSelectionScene.js";
+import BootLoader from "./scenes/boot-loader.js";
+import CharacterSelectionScene from "./scenes/character-selection-scene.js";
+import FightScene from "./scenes/fight-scene.js";
+import MainMenuScene from "./scenes/main-menu-scene.js";
+import PauseMenuScene from "./scenes/pause-menu-scene.js";
+import MapSelectionScene from "./scenes/map-selection-scene.js";
+import CreditsScene from "./scenes/credits-scene.js";
+import IntroScene from "./scenes/intro-scene.js";
+import TestScene from "./scenes/controls-test-scene.js";
 
 const config = {
   title: "Curso Phaser",
   url: "http://google.es",
   version: "0.0.1",
 
+  // WebGL (Web graphics library) JS Api for rendering 2D and 3D graphics
   type: Phaser.AUTO,
   scale: {
     parent: "phaser_container",
@@ -18,7 +22,18 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+
   pixelArt: true,
+
+  // plugins: {
+  //   scene: [
+  //     {
+  //       key: "DebugDrawPlugin",
+  //       plugin: PhaserDebugDrawPlugin,
+  //       mapping: "debugDraw",
+  //     },
+  //   ],
+  // },
 
   banner: {
     hidePhaser: false,
@@ -27,23 +42,28 @@ const config = {
   },
 
   physics: {
+    // Arcade physics plugin, manages physics simulation
     default: "arcade",
     arcade: {
       // True para ver las hitboxes
       debug: true,
-      gravity: {
-        y: 800,
-      },
+      // La gravity se aplica a todos los bodys de arcade
+      // gravity: {
+      //   y: 800,
+      // },
     },
   },
 
   scene: [
     BootLoader,
+    FightScene,
+    TestScene,
+    IntroScene,
     MainMenuScene,
     MapSelectionScene,
-    FightScene,
     CharacterSelectionScene,
     PauseMenuScene,
+    CreditsScene,
   ],
 };
 

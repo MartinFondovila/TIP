@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/MartinFondovila/TIP#readme",
   "dependencies": {
-    "phaser": "^3.55.2"
+    "phaser": "^3.55.2",
+    "phaser-plugin-debug-draw": "^7.0.0",
+    "phaser3-rex-plugins": "^1.1.79"
   }
 }

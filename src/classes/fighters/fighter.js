@@ -1,50 +1,64 @@
-import { StateMachine } from "../stateMachine/stateMachine.js";
+import { StateMachine } from "../state-machine/state-machine.js";
 
 export class Fighter extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, controls, texture, healthPoints, blockingDefense) {
+  constructor(scene, x, y, controls, texture, frame, healthPoints) {
+    // Condición para que la clase no se pueda instanciar ya que es abstracta
     if (new.target === Fighter) {
       throw new TypeError(
         "No se puede instanciar esta clase porque es abstracta."
       );
     }
-    super(scene, x, y, texture);
-    scene.physics.world.enable(this);
+    super(scene, x, y, texture, frame);
+
+    // Agrega los controles con los que se va a manejar el luchador
     this.controls = controls;
+
+    this.scene.physics.add.existing(this);
+    this.scene.add.existing(this);
+    this.setCollideWorldBounds(true);
+
     this.healthPoints = healthPoints;
-    this.healthBar;
-    this.enemy;
-    this.blockingDefense = blockingDefense;
     this.stateMachine = new StateMachine(this);
     this.animationsMap = new Map();
     this.setAnimationsOnMap();
     this.immunity = false;
-    this.blocking = false;
-    this.attackHitbox;
+
+    this.fist;
+    //this.positionFist()
 
     this.stateMachine
       .addState("idle", {
         onEnter: this.idleOnEnter,
         onUpdate: this.idleOnUpdate,
       })
-      .addState("walk", {
-        onEnter: this.walkOnEnter,
-        onUpdate: this.walkOnUpdate,
+      .addState("walking", {
+        onEnter: this.walkingOnEnter,
+        onUpdate: this.walkingOnUpdate,
       })
-      .addState("jump", {
-        onEnter: this.jumpOnEnter,
-        onUpdate: this.jumpOnUpdate,
+      .addState("jumping", {
+        onEnter: this.jumpingOnEnter,
+        onUpdate: this.jumpingOnUpdate,
       })
-      .addState("fall", {
-        onEnter: this.fallOnEnter,
-        onUpdate: this.fallOnUpdate,
+      .addState("falling", {
+        onEnter: this.fallingOnEnter,
+        onUpdate: this.fallingOnUpdate,
       })
-      .addState("attack", {
-        onEnter: this.attackOnEnter,
-        onUpdate: this.attackOnUpdate,
+      .addState("attacking", {
+        onEnter: this.attackingOnEnter,
+        onUpdate: this.attackingOnUpdate,
       })
-      .addState("hit", {
-        onEnter: this.hitOnEnter,
-        onUpdate: this.hitOnUpdate,
+      .addState("clash", {
+        onEnter: this.clashOnEnter,
+        onUpdate: this.clashOnUpdate,
+      })
+      // Quizas otro nombre
+      .addState("attackingMidAir", {
+        onEnter: this.attackingMidAirOnEnter,
+        onUpdate: this.attackingMidAirOnUpdate,
+      })
+      .addState("damaged", {
+        onEnter: this.damagedOnEnter,
+        onUpdate: this.damagedOnUpdate,
       })
       .addState("defeated", {
         onEnter: this.defeatedOnEnter,
@@ -60,7 +74,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       this
     );
 
-    this.on("animationcomplete_" + this.animationsMap.get("attack"), () => {
+    this.on("animationcomplete_" + this.animationsMap.get("attacking"), () => {
       this.stateMachine.setState("idle");
     });
 
@@ -77,32 +91,33 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   idleOnUpdate() {
     if (this.isFalling()) {
-      this.stateMachine.setState("fall");
+      this.stateMachine.setState("falling");
     }
 
     if (this.controls.left.isDown || this.controls.right.isDown) {
-      this.stateMachine.setState("walk");
+      this.stateMachine.setState("walking");
+      //this.fist.stateMachine.setState("walking");
     }
 
     if (
       Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
       !this.isImmune()
     ) {
-      this.stateMachine.setState("attack");
+      this.stateMachine.setState("attacking");
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.controls.jump)) {
-      this.stateMachine.setState("jump");
+      this.stateMachine.setState("jumping");
     }
   }
 
-  walkOnEnter() {
-    this.anims.play(this.animationsMap.get("walk"));
+  walkingOnEnter() {
+    this.anims.play(this.animationsMap.get("walking"));
   }
 
-  walkOnUpdate() {
+  walkingOnUpdate() {
     if (this.isFalling()) {
-      this.stateMachine.setState("fall");
+      this.stateMachine.setState("falling");
     }
 
     if (this.controls.left.isDown) {
@@ -117,102 +132,117 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
       !this.isImmune()
     ) {
-      this.stateMachine.setState("attack");
+      this.stateMachine.setState("attacking");
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.controls.jump)) {
-      this.stateMachine.setState("jump");
+      this.stateMachine.setState("jumping");
     }
   }
 
-  hitOnEnter() {
-    this.attackHitbox.body.enable = false;
-    console.log(this.enemy);
-    this.recieveDamage(this.enemy.attackHitbox.baseDamage);
-    this.becomeImmune(1000, 0xff0000);
+  jumpingOnEnter() {
+    this.setVelocityY(-500);
+    this.anims.play(this.animationsMap.get("jumping"));
   }
 
-  hitOnUpdate() {
-    this.stateMachine.setState("idle");
+  // Ver la posibilidad de pasar al estado attackingMidAir
+  jumpingOnUpdate() {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
+      !this.isImmune()
+    ) {
+      this.stateMachine.setState("attackingMidAir");
+    } else if (this.isFalling()) {
+      this.stateMachine.setState("falling");
+    } else if (this.body.blocked.down) {
+      this.stateMachine.setState("idle");
+    } else if (this.controls.left.isDown) {
+      this.walkLeft();
+    } else if (this.controls.right.isDown) {
+      this.walkRight();
+    }
   }
 
-  fallOnEnter() {
-    this.anims.play(this.animationsMap.get("fall"));
+  fallingOnEnter() {
+    this.anims.play(this.animationsMap.get("falling"));
+  }
+
+  // Ver la posibilidad de pasar al estado attacking
+  fallingOnUpdate() {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
+      !this.isImmune()
+    ) {
+      this.stateMachine.setState("attackingMidAir");
+    } else if (this.body.blocked.down) {
+      this.stateMachine.setState("idle");
+    } else if (this.controls.left.isDown) {
+      this.walkLeft();
+    } else if (this.controls.right.isDown) {
+      this.walkRight();
+    }
+  }
+
+  // REHACER
+  attackingOnEnter() {
+    this.anims.play(this.animationsMap.get("attacking"));
+  }
+
+  // REHACER
+  attackingOnUpdate() {}
+
+  // HACER
+  clashOnEnter() {}
+
+  // HACER
+  clashOnUpdate() {}
+
+  // HACER
+  attackingMidAirOnEnter() {}
+
+  // HACER
+  attackingMidAirOnUpdate() {}
+
+  // Efecto rebote
+  damagedOnEnter(sourceOfDamage) {
+    console.log(sourceOfDamage);
+    if (this.canRecieveFullDamage(sourceOfDamage)) {
+      this.recieveDamage();
+      this.becomeImmune(1000, 0xff0000);
+    } else {
+      this.recieveDamage(sourceOfDamage);
+    }
+  }
+
+  // Por aca o en el OnEnter va a tener que estar el efector rebote
+  damagedOnUpdate() {
+    if (this.isDefeated()) {
+      this.stateMachine.setState("defeated");
+    } else {
+      this.stateMachine.setState("idle");
+    }
   }
 
   defeatedOnEnter() {
     this.anims.play(this.animationsMap.get("defeated"));
   }
 
-  fallOnUpdate() {
-    if (this.body.blocked.down) {
-      this.stateMachine.setState("idle");
-    } else if (this.controls.left.isDown) {
-      this.walkLeft();
-    } else if (this.controls.right.isDown) {
-      this.walkRight();
-    }
-  }
-
-  attackOnEnter() {
-    this.setVelocityX(0);
-    this.anims.play(this.animationsMap.get("attack"));
-    this.attackHitbox.body.x = !this.flipX
-      ? this.body.x + this.width * 0.2
-      : this.body.x - this.width * 0.2;
-    this.attackHitbox.body.y = this.body.y;
-    this.scene.physics.world.enableBody(this.attackHitbox);
-  }
-
-  // Revisar bien cuando deshabilitar la hitbox del ataque
-  attackOnUpdate() {
-    this.attackHitbox.body.enable = false;
-  }
-
-  jumpOnEnter() {
-    this.setVelocityY(-500);
-    this.anims.play(this.animationsMap.get("jump"));
-  }
-
-  jumpOnUpdate() {
-    if (this.isFalling()) {
-      this.stateMachine.setState("fall");
-    }
-
-    if (this.body.blocked.down) {
-      this.stateMachine.setState("idle");
-    } else if (this.controls.left.isDown) {
-      this.walkLeft();
-    } else if (this.controls.right.isDown) {
-      this.walkRight();
-    }
-  }
-
   // Metodo abstracto que deben implementar las subclases
   setAnimationsOnMap() {}
 
-  // Metodo abstracto
-  block() {}
-
+  // REACOMODAR LAS BARRAS DE VIDA - PUEDE SER CON EL VIDEO DE YOUTUBE QUE ESTA GUARDADO EN VER MAS TARDE
   recieveDamage(damagePoints) {
     if (!this.isImmune()) {
       console.log("daño: " + damagePoints);
-      this.recieveDamageAux(damagePoints);
-      this.healthBar.decrease(this.calculateDamage(damagePoints));
+      this.healthPoints = this.healthPoints - damagePoints;
     }
   }
 
-  recieveDamageAux(damagePoints) {
-    if (this.canRecieveFullDamage(damagePoints)) {
-      this.healthPoints -= this.calculateDamage(damagePoints);
-    } else {
-      this.healthPoints = 0;
-    }
-
-    if (this.isDefeated()) {
-      console.log("muerto");
-      this.stateMachine.setState("defeated");
-    }
+  // VER QUE PASA SI SE GOLPEAN AL MISMO TIEMPO
+  // DESACTIVAR LAS HITBOX
+  // PUEDE HABER EMPATE?
+  canRecieveFullDamage(damagePoints) {
+    return this.healthPoints - damagePoints > 0;
   }
 
   disableControls() {
@@ -229,33 +259,11 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     return this.healthPoints === 0;
   }
 
-  // VER QUE PASA SI SE GOLPEAN AL MISMO TIEMPO
-  // DESACTIVAR LAS HITBOX
-  // PUEDE HABER EMPATE?
-  canRecieveFullDamage(damagePoints) {
-    if (this.isBlocking) {
-      return this.healthPoints - (damagePoints - this.blockingDefense) > 0;
-    } else {
-      return this.healthPoints - damagePoints > 0;
-    }
-  }
-
-  calculateDamage(damagePoints) {
-    if (this.isBlocking()) {
-      return damagePoints - this.blockingDefense;
-    } else {
-      return damagePoints;
-    }
-  }
-
   isImmune() {
     return this.immunity;
   }
 
-  isBlocking() {
-    return this.blocking;
-  }
-
+  // REFACTORIZAR
   becomeImmune(milliseconds, tint) {
     if (!this.isImmune()) {
       this.immunity = true;
@@ -281,31 +289,31 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  // Redifinir en clase concreta para poner la animacion especifica
   walkLeft() {
     this.setFlip(true);
     this.setVelocityX(-160);
   }
 
-  // Redifinir en clase concreta para poner la animacion especifica
   walkRight() {
     this.setFlip(false);
     this.setVelocityX(160);
-  }
-
-  idle() {
-    this.setVelocityX(0);
-    this.anims.play(this.animationsMap.get("idle"));
   }
 
   isFalling() {
     return this.body.velocity.y > 0;
   }
 
-  // Metodo abstracto
-  specialAttack() {}
+  // Getters y setters
+  getHealthPoints() {
+    return this.healthPoints;
+  }
+
+  setHealthPoints(points) {
+    this.healthPoints = points;
+  }
 
   update(deltaTime) {
     this.stateMachine.update(deltaTime);
+    this.fist.update(deltaTime);
   }
 }

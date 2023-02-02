@@ -1,32 +1,27 @@
-import { Attack } from "../attack/attack.js";
-import { HealthBar } from "../healthBar/HealthBar.js";
+import { Fist } from "../attacks/fist.js";
+import { HealthBar } from "../health-bar/health-bar.js";
 import { Fighter } from "./fighter.js";
 
 export class Knight extends Fighter {
-  constructor(scene, x, y, controls) {
-    super(scene, x, y, controls, "knight", 40, 10);
-    //this.setScale(0.5);
-    //this.body.setSize(70, 110);
-    //this.body.setOffset(65, 33);
-    //this.setOrigin(0.5, 1);
+  constructor(scene, x, y, controls, gravity) {
+    super(scene, x, y, controls, "knight", 0, 40, 10);
 
     this.healthBar = new HealthBar(scene, 200, 0, this.healthPoints);
+    this.body.setGravityY(gravity);
 
-    this.attackHitbox = new Attack(scene, 0, 0, 32, 64, 10, this);
+    this.fist = new Fist(scene, x - 15, y + 30, "fist", 10, this);
+    this.fist.setCollideWorldBounds(true);
 
     //this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
-
-    scene.physics.add.existing(this.attackHitbox);
-    this.attackHitbox.body.setAllowGravity(false);
-    this.attackHitbox.body.enable = false;
   }
 
+  // POR AHORA LO DEJO ASI, PERO CREO QUE SE TIENE QUE CAMBIAR
   setAnimationsOnMap() {
     this.animationsMap.set("idle", "knightIdle");
-    this.animationsMap.set("walk", "knightWalking");
-    this.animationsMap.set("jump", "jumpingKnight");
-    this.animationsMap.set("fall", "fallingKnight");
-    this.animationsMap.set("attack", "attackingKnight");
+    this.animationsMap.set("walking", "knightWalking");
+    this.animationsMap.set("jumping", "jumpingKnight");
+    this.animationsMap.set("falling", "fallingKnight");
+    this.animationsMap.set("attacking", "attackingKnight");
     this.animationsMap.set("defeated", "knightIdle");
   }
 }
