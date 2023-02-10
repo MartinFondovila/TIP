@@ -1,67 +1,55 @@
 import { PlayerSelector } from "../classes/options-text/player-selector.js";
+import BaseMenuScene from "./base-menu-scene.js";
+import { FighterSelection } from "../classes/fighter-selection.js";
 
-class CharacterSelectionScene extends Phaser.Scene {
+class CharacterSelectionScene extends BaseMenuScene {
   constructor() {
-    super("CharacterSelectionMenu");
-    this.controls;
-    this.fighters = [];
+    super("CharacterSelectionScene", false, false);
+    this.fightersSelection = [];
     this.playerSelectors = [];
     this.actualSelector;
     this.selectedOption;
     this.fightInfo = {};
   }
 
-  init() {}
-
-  preload() {}
-
   create() {
-    const KeyCodes = Phaser.Input.Keyboard.KeyCodes;
+    console.log("holas");
+    this.createControls();
+    this.createFighterSelection(2, 4);
 
-    this.controls = this.input.keyboard.addKeys({
-      moveUp: KeyCodes.UP,
-      moveDown: KeyCodes.DOWN,
-      select: KeyCodes.ENTER,
-      back: KeyCodes.ESC,
-    });
+    this.add
+      .text(this.conf.gameWidth / 2, this.conf.gameHeight / 2, "MEDIO")
+      .setOrigin(0.5, 0);
 
-    this.fighters.push(this.add.text(225, 50, "Ninja", { fontSize: 40 }));
-    this.fighters.push(this.add.text(225, 100, "Knight", { fontSize: 40 }));
-    this.fighters.forEach((fighter) => fighter.setOrigin(0.5));
-
-    // Este opcion deberia mostrar el boton que se usa
-    this.add.text(225, 200, "Back", { fontSize: 40 });
-    // Este opcion deberia mostrar el boton que se usa
-    this.add.text(350, 200, "Select", { fontSize: 40 });
-
+    console.log(this.fightersSelection);
     // Ver si hay otra forma de settear el fondo
-    this.cameras.main.setBackgroundColor("#000000");
+    //this.cameras.main.setBackgroundColor("#000000");
 
-    this.selectedOption = this.fighters[0];
-    this.selectedOption.setTint(0xffff00);
+    // this.selectedOption = this.fighters[0];
+    // this.selectedOption.setTint(0xffff00);
 
-    //Ver otra forma de crear los selectors
-    this.playerSelectors.push(
-      new PlayerSelector(
-        this,
-        this.selectedOption.x - 50,
-        this.selectedOption.y,
-        1,
-        { fontSize: 40 }
-      )
-    );
-    this.playerSelectors.push(
-      new PlayerSelector(
-        this,
-        this.selectedOption.x - 50,
-        this.selectedOption.y,
-        2,
-        { fontSize: 40 }
-      )
-    );
+    // //Ver otra forma de crear los selectors
+    // this.playerSelectors.push(
+    //   new PlayerSelector(
+    //     this,
+    //     this.selectedOption.x - 50,
+    //     this.selectedOption.y,
+    //     1,
+    //     { fontSize: 40 }
+    //   )
+    // );
+    // this.playerSelectors.push(
+    //   new PlayerSelector(
+    //     this,
+    //     this.selectedOption.x - 50,
+    //     this.selectedOption.y,
+    //     2,
+    //     { fontSize: 40 }
+    //   )
+    // );
 
-    this.actualSelector = this.playerSelectors[0];
-    this.actualSelector.setVisible(true);
+    // this.actualSelector = this.playerSelectors[0];
+    // this.actualSelector.setVisible(true);
   }
 
   update() {
@@ -218,13 +206,67 @@ class CharacterSelectionScene extends Phaser.Scene {
     return this.fighters.length - 1 < index || index < 0;
   }
 
-  // Ver si resetear la escena o reusar un metodo como este
-  resetSelection() {
-    this.fightInfo = {};
-    this.selectedOption.clearTint();
-    this.selectedOption = this.fighters[0];
-    this.selectedOption.setTint(0xffff00);
+  createFighterSelection(rowsQuantity, fightersPerRow) {
+    let lastSlice = 0;
+    for (let indexRow = 1; indexRow <= rowsQuantity; indexRow++) {
+      let fighterSliced = fighters.slice(lastSlice, fightersPerRow * indexRow);
+      lastSlice += fightersPerRow;
+      let row = [];
+      let lastXPosition =
+        this.conf.gameWidth / 2 -
+        this.conf.characterSelectionDimensions.width * (fightersPerRow / 2 + 1);
+      fighterSliced.forEach((fighter) => {
+        let newSelection = new FighterSelection(
+          this,
+          lastXPosition + this.conf.characterSelectionDimensions.width,
+          this.conf.gameHeight * 0.3 +
+            this.conf.characterSelectionDimensions.height * (indexRow - 1),
+          fighter.selectionTexture,
+          fighter.fighterKey,
+          0x0000ff,
+          0xff0000
+        ).setOrigin(0, 0);
+        let newFrame = this.add
+          .sprite(newSelection.x, newSelection.y, "whiteFrame")
+          .setOrigin(0, 0);
+        row.push(newSelection);
+        lastXPosition =
+          lastXPosition + this.conf.characterSelectionDimensions.width;
+      });
+
+      while (row.length != fightersPerRow) {
+        let newSelection = new FighterSelection(
+          this,
+          lastXPosition + this.conf.characterSelectionDimensions.width,
+          this.conf.gameHeight * 0.3 +
+            this.conf.characterSelectionDimensions.height * (indexRow - 1),
+          "interrogationMark",
+          "",
+          0x0000ff,
+          0xff0000
+        ).setOrigin(0, 0);
+        let newFrame = this.add
+          .sprite(newSelection.x, newSelection.y, "whiteFrame")
+          .setOrigin(0, 0);
+        row.push(newSelection);
+        lastXPosition =
+          lastXPosition + this.conf.characterSelectionDimensions.width;
+      }
+      this.fightersSelection.push(row);
+    }
   }
+
+  // Ver si resetear la escena o reusar un metodo como este
+  // resetSelection() {
+  //   this.fightInfo = {};
+  //   this.selectedOption.clearTint();
+  //   this.selectedOption = this.fighters[0];
+  //   this.selectedOption.setTint(0xffff00);
+  // }
 }
+
+const fighters = [
+  { selectionTexture: "knightSelection", fighterKey: "knight" },
+];
 
 export default CharacterSelectionScene;

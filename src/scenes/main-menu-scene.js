@@ -2,18 +2,15 @@ import BaseMenuScene from "./base-menu-scene.js";
 // TAREA ACOMODAR MENUS
 class MainMenuScene extends BaseMenuScene {
   constructor() {
-    super("MainMenuScene", false);
+    super("MainMenuScene", false, false);
     this.selectedOption;
     this.fists = [];
   }
 
-  init() {}
-
-  preload() {}
-
   create() {
-    this.fistSourceImage = this.textures.get("fist").getSourceImage();
-    super.create();
+    console.log("created");
+    this.createControls();
+    this.disableControls();
     this.createBackground();
     this.createFists();
     this.createLogo();
@@ -21,22 +18,18 @@ class MainMenuScene extends BaseMenuScene {
     this.createOptions();
     this.setDefaultOption();
     this.createAudios();
-    this.cameras.main.fadeIn(4000, 255, 255, 255);
+    this.cameras.main
+      .fadeIn(2000, 255, 255, 255)
+      .on(this.camerasEvents.FADE_IN_COMPLETE, this.enableControls, this);
     this.cameras.main.shake(2000, 0.01);
-
-    // Ver si hay otra forma de settear el fondo
-    //this.cameras.main.setBackgroundColor("#000000");
-    console.log(this.selectedOption.text);
-    console.log(this.controls);
-    console.log(this.options);
   }
 
   update() {
-    if (Phaser.Input.Keyboard.JustDown(this.controls.moveUp)) {
+    if (this.inputKeyboard.JustDown(this.controls.moveUp)) {
       this.handleChangeOptionUp();
-    } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveDown)) {
+    } else if (this.inputKeyboard.JustDown(this.controls.moveDown)) {
       this.handleChangeOptionDown();
-    } else if (Phaser.Input.Keyboard.JustDown(this.controls.select)) {
+    } else if (this.inputKeyboard.JustDown(this.controls.select)) {
       this.handleSelectOnOption(this.selectedOption.text);
       console.log("Se selecciono la opción: " + this.selectedOption.text);
     }
@@ -50,8 +43,8 @@ class MainMenuScene extends BaseMenuScene {
       this.options.push(
         this.add
           .text(
-            this.scale.width / 2,
-            this.scale.height * 0.65 + lastOptionPositionY,
+            this.conf.gameWidth / 2,
+            this.conf.gameHeight * 0.65 + lastOptionPositionY,
             text,
             { fontSize: 40 }
           )
@@ -65,8 +58,8 @@ class MainMenuScene extends BaseMenuScene {
     this.fists.push(
       this.add
         .sprite(
-          this.scale.width * 0.5 - this.fistSourceImage.width * 4,
-          this.scale.height * 0.4,
+          this.conf.gameWidth * 0.5 - this.conf.fistDimensions.width * 4,
+          this.conf.gameHeight * 0.4,
           "knightFist"
         )
         .setScale(4)
@@ -75,8 +68,8 @@ class MainMenuScene extends BaseMenuScene {
     this.fists.push(
       this.add
         .sprite(
-          this.scale.width * 0.5 + this.fistSourceImage.width * 4,
-          this.scale.height * 0.4,
+          this.conf.gameWidth * 0.5 + this.conf.fistDimensions.width * 4,
+          this.conf.gameHeight * 0.4,
           "ninjaFist"
         )
         .setScale(4)
@@ -87,7 +80,7 @@ class MainMenuScene extends BaseMenuScene {
 
   createLogo() {
     this.logo = this.add
-      .image(this.scale.width * 0.5, 0, "clashOfFistsLogo")
+      .image(this.conf.gameWidth * 0.5, 0, "clashOfFistsLogo")
       .setOrigin(0.5, 1);
   }
 
@@ -100,7 +93,6 @@ class MainMenuScene extends BaseMenuScene {
     this.tweens.add({
       targets: this.fists,
       y: this.fists[0].y + 2,
-      //ease: "Bounce",
       yoyo: true,
       loop: -1,
       duration: 700,
@@ -145,7 +137,6 @@ class MainMenuScene extends BaseMenuScene {
     }
     this.selectedOption.setTint(0xffff00);
     this.changeOptionSound.play();
-    console.log(nextOptionIndex);
   }
 
   handleChangeOptionUp() {
@@ -158,47 +149,20 @@ class MainMenuScene extends BaseMenuScene {
     }
     this.selectedOption.setTint(0xffff00);
     this.changeOptionSound.play();
-    console.log(nextOptionIndex);
   }
 
   handleSelectOnOption(option) {
     switch (option) {
       case "Versus":
-        this.switchScene("CharacterSelectionMenu");
+        this.switchScene("CharacterSelectionScene");
         break;
       case "Options":
-        this.switchScene("OptionScene");
+        //this.switchScene("OptionScene");
         break;
       case "Credits":
         this.switchScene("CreditsScene");
         break;
     }
-  }
-
-  switchScene(sceneName) {
-    this.scene.start(sceneName);
-    this.scene.moveAbove("MainMenuScene", "sceneName");
-  }
-
-  scenesFunctions() {
-    this.scene.launch;
-    this.scene.pause;
-    this.scene.remove;
-    this.scene.restart;
-    this.scene.resume;
-    this.scene.run;
-    this.scene.sleep;
-    this.scene.start;
-    this.scene.stop;
-    this.scene.transition;
-    this.scene.wake;
-    this.scene.switch;
-  }
-
-  resetSelectedOption() {
-    this.selectedOption.clearTint();
-    this.selectedOption = this.options[0];
-    this.selectedOption.setTint(0xffff00);
   }
 
   isOutOfBounds(index) {

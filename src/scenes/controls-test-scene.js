@@ -59,50 +59,68 @@ class TestScene extends Phaser.Scene {
 
   handleChangeOptionDown() {
     this.selectedOption.clearTint();
-    console.log(this.bidemsionalArray.length);
 
     let nextArrayIndex = this.bidemsionalArray.indexOf(this.actualRow) + 1;
 
     console.log(nextArrayIndex);
 
-    if (this.isOutOfBounds(nextArrayIndex)) {
+    if (this.isOutOfBounds(nextArrayIndex, this.bidemsionalArray)) {
+      console.log("out");
+      let firstRow = this.bidemsionalArray[0];
       this.setSelectedOption(
-        this.bidemsionalArray[0][0],
-        this.bidemsionalArray[0]
+        firstRow[this.actualRow.indexOf(this.selectedOption)],
+        firstRow
       );
-      console.log("hola");
       return;
     }
 
-    let bottomOption =
+    let nextOption =
       this.bidemsionalArray[nextArrayIndex][
         this.actualRow.indexOf(this.selectedOption)
       ];
-    if (bottomOption === -1) {
-      let newOption =
-        this.bidemsionalArray[nextArrayIndex][
-          this.bidemsionalArray[nextArrayIndex].lenght - 1
-        ];
-      this.setSelectedOption(newOption, this.bidemsionalArray[nextArrayIndex]);
-    } else {
-      let newOption =
-        this.bidemsionalArray[nextArrayIndex][
-          this.actualRow.indexOf(this.selectedOption)
-        ];
-      this.setSelectedOption(newOption, this.bidemsionalArray[nextArrayIndex]);
-    }
+    this.setSelectedOption(nextOption, this.bidemsionalArray[nextArrayIndex]);
+
+    // let bottomOption =
+    //   this.bidemsionalArray[nextArrayIndex][
+    //     this.actualRow.indexOf(this.selectedOption)
+    //   ];
+    // if (bottomOption == null) {
+    //   let newOption =
+    //     this.bidemsionalArray[nextArrayIndex][
+    //       this.bidemsionalArray[nextArrayIndex].lenght - 1
+    //     ];
+    //   this.setSelectedOption(newOption, this.bidemsionalArray[nextArrayIndex]);
+    // } else {
+    //   let newOption =
+    //     this.bidemsionalArray[nextArrayIndex][
+    //       this.actualRow.indexOf(this.selectedOption)
+    //     ];
+    //   this.setSelectedOption(newOption, this.bidemsionalArray[nextArrayIndex]);
+    // }
   }
 
   handleChangeOptionUp() {
     this.selectedOption.clearTint();
-    let nextOptionIndex = this.options.indexOf(this.selectedOption) - 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.selectedOption = this.options[this.options.length - 1];
-    } else {
-      this.selectedOption = this.options[nextOptionIndex];
+
+    let nextArrayIndex = this.bidemsionalArray.indexOf(this.actualRow) - 1;
+
+    console.log(nextArrayIndex);
+
+    if (this.isOutOfBounds(nextArrayIndex, this.bidemsionalArray)) {
+      console.log("out");
+      let lastRow = this.bidemsionalArray[this.bidemsionalArray.length - 1];
+      this.setSelectedOption(
+        lastRow[this.actualRow.indexOf(this.selectedOption)],
+        lastRow
+      );
+      return;
     }
-    this.selectedOption.setTint(0xffff00);
-    console.log(nextOptionIndex);
+
+    let nextOption =
+      this.bidemsionalArray[nextArrayIndex][
+        this.actualRow.indexOf(this.selectedOption)
+      ];
+    this.setSelectedOption(nextOption, this.bidemsionalArray[nextArrayIndex]);
   }
 
   setSelectedOption(option, row) {
