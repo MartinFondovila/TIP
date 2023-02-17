@@ -25,15 +25,15 @@ const config = {
 
   pixelArt: true,
 
-  // plugins: {
-  //   scene: [
-  //     {
-  //       key: "DebugDrawPlugin",
-  //       plugin: PhaserDebugDrawPlugin,
-  //       mapping: "debugDraw",
-  //     },
-  //   ],
-  // },
+  plugins: {
+    scene: [
+      {
+        key: "DebugDrawPlugin",
+        plugin: PhaserDebugDrawPlugin,
+        mapping: "debugDraw",
+      },
+    ],
+  },
 
   banner: {
     hidePhaser: false,

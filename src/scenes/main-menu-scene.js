@@ -1,4 +1,6 @@
 import BaseMenuScene from "./base-menu-scene.js";
+import { MENU_OPTIONS } from "../utils.js";
+import { MenuOption } from "../classes/menu-option.js";
 // TAREA ACOMODAR MENUS
 class MainMenuScene extends BaseMenuScene {
   constructor() {
@@ -31,24 +33,22 @@ class MainMenuScene extends BaseMenuScene {
       this.handleChangeOptionDown();
     } else if (this.inputKeyboard.JustDown(this.controls.select)) {
       this.handleSelectOnOption(this.selectedOption.text);
-      console.log("Se selecciono la opción: " + this.selectedOption.text);
     }
   }
 
   createOptions() {
-    let optionsText = ["Versus", "Options", "Credits"];
     let lastOptionPositionY = 0;
 
-    optionsText.forEach((text) => {
+    MENU_OPTIONS.forEach((option) => {
       this.options.push(
-        this.add
-          .text(
-            this.conf.gameWidth / 2,
-            this.conf.gameHeight * 0.65 + lastOptionPositionY,
-            text,
-            { fontSize: 40 }
-          )
-          .setOrigin(0.5, 1)
+        new MenuOption(
+          this,
+          this.conf.gameWidth / 2,
+          this.conf.gameHeight * 0.65 + lastOptionPositionY,
+          option.text,
+          option.scene,
+          { fontSize: 40 }
+        ).setOrigin(0.5, 1)
       );
       lastOptionPositionY += 50;
     });
@@ -113,6 +113,7 @@ class MainMenuScene extends BaseMenuScene {
 
   createAudios() {
     this.changeOptionSound = this.sound.add("changeOption");
+    this.selectSound = this.sound.add("select");
   }
 
   setSelectedOption(option) {
@@ -151,18 +152,9 @@ class MainMenuScene extends BaseMenuScene {
     this.changeOptionSound.play();
   }
 
-  handleSelectOnOption(option) {
-    switch (option) {
-      case "Versus":
-        this.switchScene("CharacterSelectionScene");
-        break;
-      case "Options":
-        //this.switchScene("OptionScene");
-        break;
-      case "Credits":
-        this.switchScene("CreditsScene");
-        break;
-    }
+  handleSelectOnOption() {
+    this.selectSound.play();
+    this.selectedOption.handleSelect();
   }
 
   isOutOfBounds(index) {

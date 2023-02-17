@@ -4,40 +4,12 @@ class BootLoader extends BaseScene {
   constructor() {
     super("BootLoaderScene");
   }
-
+  // Ver bien el nombre de las funciones
   preload() {
     this.drawProgressBar();
     this.drawText();
     this.load.setPath("./assets/");
-
-    this.load.on(this.loaderEvents.COMPLETE, () => {
-      this.scene.start("IntroScene");
-    });
-    console.log(this.percentText);
-    this.load.on(
-      this.loaderEvents.PROGRESS,
-      function (value) {
-        this.percentText.setText(parseInt(value * 100) + "%");
-        this.progressBar.clear();
-        this.progressBar.fillStyle(0xffffff, 1);
-        this.progressBar.fillRect(
-          this.conf.gameWidth / 2 - 150,
-          this.conf.gameHeight / 2 + 10,
-          300 * value,
-          30
-        );
-      },
-      this
-    );
-
-    this.load.on(
-      this.loaderEvents.FILE_PROGRESS,
-      function (file) {
-        this.assetText.setText("Loading asset: " + file.key);
-      },
-      this
-    );
-
+    this.createListeners();
     this.loadImages();
     this.loadAtlas();
     this.loadAnimations();
@@ -94,6 +66,36 @@ class BootLoader extends BaseScene {
       .setOrigin(0.5, 0);
   }
 
+  createListeners() {
+    this.load.on(this.loaderEvents.COMPLETE, () => {
+      this.scene.start("IntroScene");
+    });
+    console.log(this.percentText);
+    this.load.on(
+      this.loaderEvents.PROGRESS,
+      function (value) {
+        this.percentText.setText(parseInt(value * 100) + "%");
+        this.progressBar.clear();
+        this.progressBar.fillStyle(0xffffff, 1);
+        this.progressBar.fillRect(
+          this.conf.gameWidth / 2 - 150,
+          this.conf.gameHeight / 2 + 10,
+          300 * value,
+          30
+        );
+      },
+      this
+    );
+
+    this.load.on(
+      this.loaderEvents.FILE_PROGRESS,
+      function (file) {
+        this.assetText.setText("Loading asset: " + file.key);
+      },
+      this
+    );
+  }
+
   loadImages() {
     this.load.image(["background", "floor", "wall"]);
     this.load.image("introClash", "intro-clash.png");
@@ -122,6 +124,16 @@ class BootLoader extends BaseScene {
       "carapan/carapan.png",
       "carapan/carapan-atlas.json"
     );
+    this.load.aseprite(
+      "fighterFrame",
+      "fighter-frame/fighter-frame.png",
+      "fighter-frame/fighter-frame.json"
+    );
+    this.load.aseprite(
+      "arrows",
+      "arrows/arrows.png",
+      "arrows/arrows-atlas.json"
+    );
   }
 
   loadAnimations() {
@@ -135,6 +147,9 @@ class BootLoader extends BaseScene {
     this.load.audio("blinkIntro", ["audio/blink-intro.wav"]);
     this.load.audio("preClash", ["audio/pre-clash.wav"]);
     this.load.audio("disappear", ["audio/disappear.m4a"]);
+    this.load.audio("blocked", ["audio/blocked.wav"]);
+    this.load.audio("select", ["audio/select.wav"]);
+    this.load.audio("selectFighter", ["audio/select-fighter.wav"]);
   }
 }
 

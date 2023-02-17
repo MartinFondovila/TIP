@@ -1,4 +1,5 @@
 import BaseScene from "./base-scene.js";
+import { FighterSelectionContainer } from "../classes/fighter-selection-container.js";
 
 class IntroScene extends BaseScene {
   constructor() {
@@ -18,9 +19,8 @@ class IntroScene extends BaseScene {
     this.createFistsCollider();
     this.createAudios();
 
-    this.add
-      .sprite(this.conf.gameWidth / 2, this.conf.gameHeight / 2, "whiteFrame")
-      .setTintFill(0x0000ff, null, 0x0000ff, null);
+    // Ver esto para que suene la musica
+    this.sound.pauseOnBlur = false;
 
     this.input.keyboard.once(
       this.inputKeyboardEvents.ANY_KEY_DOWN,
@@ -128,11 +128,11 @@ class IntroScene extends BaseScene {
           x: this.firstFist.x - this.conf.gameWidth * 0.15,
           y: {
             value: this.firstFist.y - 50,
-            duration: 3000,
+            duration: 2000,
           },
           ease: "Power2",
           loop: 0,
-          duration: 2000,
+          duration: 1500,
         },
         {
           x: this.conf.gameWidth * 0.5 - this.firstFist.width * 4,
@@ -151,11 +151,11 @@ class IntroScene extends BaseScene {
           x: this.secondFist.x + this.conf.gameWidth * 0.15,
           y: {
             value: this.secondFist.y - 50,
-            duration: 3000,
+            duration: 2000,
           },
           ease: "Power2",
           loop: 0,
-          duration: 2000,
+          duration: 1500,
         },
         {
           x: this.conf.gameWidth * 0.5 + this.secondFist.width * 4,

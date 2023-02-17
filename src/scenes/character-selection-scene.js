@@ -1,55 +1,25 @@
-import { PlayerSelector } from "../classes/options-text/player-selector.js";
+import { PlayerSelector } from "../classes/player-selector.js";
 import BaseMenuScene from "./base-menu-scene.js";
-import { FighterSelection } from "../classes/fighter-selection.js";
+import { FighterSelectionContainer } from "../classes/fighter-selection-container.js";
+import { FighterSelectionContainerUnknown } from "../classes/fighter-selection-container-unknown.js";
 
 class CharacterSelectionScene extends BaseMenuScene {
   constructor() {
     super("CharacterSelectionScene", false, false);
     this.fightersSelection = [];
     this.playerSelectors = [];
-    this.actualSelector;
-    this.selectedOption;
-    this.fightInfo = {};
+    this.actualPlayerSelector;
+    this.selectedFighter;
+    this.actualRow;
+    this.fightConf = {};
   }
 
   create() {
-    console.log("holas");
     this.createControls();
-    this.createFighterSelection(2, 4);
-
-    this.add
-      .text(this.conf.gameWidth / 2, this.conf.gameHeight / 2, "MEDIO")
-      .setOrigin(0.5, 0);
-
-    console.log(this.fightersSelection);
-    // Ver si hay otra forma de settear el fondo
-    //this.cameras.main.setBackgroundColor("#000000");
-
-    // this.selectedOption = this.fighters[0];
-    // this.selectedOption.setTint(0xffff00);
-
-    // //Ver otra forma de crear los selectors
-    // this.playerSelectors.push(
-    //   new PlayerSelector(
-    //     this,
-    //     this.selectedOption.x - 50,
-    //     this.selectedOption.y,
-    //     1,
-    //     { fontSize: 40 }
-    //   )
-    // );
-    // this.playerSelectors.push(
-    //   new PlayerSelector(
-    //     this,
-    //     this.selectedOption.x - 50,
-    //     this.selectedOption.y,
-    //     2,
-    //     { fontSize: 40 }
-    //   )
-    // );
-
-    // this.actualSelector = this.playerSelectors[0];
-    // this.actualSelector.setVisible(true);
+    this.createBackOption();
+    this.createFighterSelection(3, 3, 1.2);
+    this.createPlayersSelectors();
+    this.setDefaultFighter();
   }
 
   update() {
@@ -57,212 +27,230 @@ class CharacterSelectionScene extends BaseMenuScene {
       this.handleChangeOptionUp();
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveDown)) {
       this.handleChangeOptionDown();
+    } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveLeft)) {
+      this.handleChangeOptionLeft();
+    } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveRight)) {
+      this.handleChangeOptionRight();
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.select)) {
-      this.handleEnterOnOption(this.selectedOption);
+      this.handleFighterSelection();
+      console.log("enter");
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.back)) {
       this.handleBack();
     }
   }
 
-  handleChangeOptionDown() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.fighters.indexOf(this.selectedOption) + 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.selectedOption = this.fighters[0];
-    } else {
-      this.selectedOption = this.fighters[nextOptionIndex];
-    }
-    this.selectedOption.setTint(0xffff00);
-    this.handleSelectorPositioning();
-    console.log(nextOptionIndex);
+  // Se puede hacer un loop para crearlos
+  createPlayersSelectors() {
+    let player1Selector = new PlayerSelector("player1Fighter", 0x0000ff);
+
+    let player2Selector = new PlayerSelector("player2Fighter", 0xff0000);
+
+    this.playerSelectors.push(player1Selector, player2Selector);
+
+    this.actualPlayerSelector = player1Selector;
   }
 
-  handleSelectorPositioning() {
-    this.actualSelector.positionLeftBasedOn(this.selectedOption);
+  setSelectedFighter(fighter, row) {
+    if (this.selectedFighter) {
+      this.selectedFighter.clearTint();
+    }
+    this.selectedFighter = fighter;
+    this.selectedFighter.handleTint(this.actualPlayerSelector.tint);
+    if (row) {
+      this.actualRow = row;
+    }
+  }
+
+  setDefaultFighter() {
+    this.setSelectedFighter(
+      this.fightersSelection[0][0],
+      this.fightersSelection[0]
+    );
+    this.selectedFighter.handleTint(this.actualPlayerSelector.tint);
+  }
+
+  handleChangeOptionDown() {
+    let nextArrayIndex = this.fightersSelection.indexOf(this.actualRow) + 1;
+
+    if (this.isOutOfBounds(nextArrayIndex, this.fightersSelection)) {
+      console.log("out");
+      let firstRow = this.fightersSelection[0];
+      this.setSelectedFighter(
+        firstRow[this.actualRow.indexOf(this.selectedFighter)],
+        firstRow
+      );
+    } else {
+      let nextFighter =
+        this.fightersSelection[nextArrayIndex][
+          this.actualRow.indexOf(this.selectedFighter)
+        ];
+      this.setSelectedFighter(
+        nextFighter,
+        this.fightersSelection[nextArrayIndex]
+      );
+    }
   }
 
   handleChangeOptionUp() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.fighters.indexOf(this.selectedOption) - 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.selectedOption = this.fighters[this.fighters.length - 1];
+    let nextArrayIndex = this.fightersSelection.indexOf(this.actualRow) - 1;
+
+    console.log(nextArrayIndex);
+
+    if (this.isOutOfBounds(nextArrayIndex, this.fightersSelection)) {
+      console.log("out");
+      let lastRow = this.fightersSelection[this.fightersSelection.length - 1];
+      this.setSelectedFighter(
+        lastRow[this.actualRow.indexOf(this.selectedFighter)],
+        lastRow
+      );
     } else {
-      this.selectedOption = this.fighters[nextOptionIndex];
+      let nextFighter =
+        this.fightersSelection[nextArrayIndex][
+          this.actualRow.indexOf(this.selectedFighter)
+        ];
+      this.setSelectedFighter(
+        nextFighter,
+        this.fightersSelection[nextArrayIndex]
+      );
     }
-    this.selectedOption.setTint(0xffff00);
-    this.handleSelectorPositioning();
+  }
+
+  handleChangeOptionRight() {
+    let nextOptionIndex = this.actualRow.indexOf(this.selectedFighter) + 1;
     console.log(nextOptionIndex);
-  }
-
-  // Ver como esperar a que termine de parpadear el P2 antes de lanza la pelea
-  handleEnterOnOption(option) {
-    this.disableControls();
-    // Agrego el fighter a el objeto fightInfo
-    this.fightInfo["player" + this.actualSelector.playerNumber] = option.text;
-    // Seteo que la seleccion del selector se completo
-    this.actualSelector.selectionComplete = true;
-    // Cambio el color y hago la animacion
-    this.actualSelector.setTint(0x00ff00);
-    this.actualSelector.blinkAnimation(1000);
-    // Actualizo el siguiente selector
-    if (this.isCharacterSelectionComplete()) {
-      // Se termino la seleccion de fighters
-      this.disableControls();
-      // Redirijo a la siguiente escena y espero para que termina la animacion
-      this.time.delayedCall(
-        1000,
-        () => this.scene.start("MapSelectionScene"),
-        null,
-        this
-      );
+    if (this.isOutOfBounds(nextOptionIndex, this.actualRow)) {
+      this.setSelectedFighter(this.actualRow[0]);
     } else {
-      // Espero para terminar la animacion y deshabilito las teclas para que no haya errores
-      this.time.delayedCall(
-        1000,
-        () => {
-          // Reseteo el color de la opcion elegida y la cambio por la primera
-          // TODO hacer un setter que hago esto
-          this.selectedOption.clearTint();
-          this.selectedOption = this.fighters[0];
-          this.selectedOption.setTint(0xffff00);
-          this.actualSelector = this.nextSelector();
-          this.actualSelector.setVisible(true);
-          this.enableControls();
-        },
-        null,
-        this
-      );
+      this.setSelectedFighter(this.actualRow[nextOptionIndex]);
     }
-    console.log(this.fightInfo);
   }
 
-  isCharacterSelectionComplete() {
-    return this.playerSelectors.every((selector) => selector.selectionComplete);
+  handleChangeOptionLeft() {
+    let nextOptionIndex = this.actualRow.indexOf(this.selectedFighter) - 1;
+    console.log(nextOptionIndex);
+    if (this.isOutOfBounds(nextOptionIndex, this.actualRow)) {
+      this.setSelectedFighter(this.actualRow[this.actualRow.length - 1]);
+    } else {
+      this.setSelectedFighter(this.actualRow[nextOptionIndex]);
+    }
   }
 
-  nextSelector() {
-    return this.playerSelectors[
-      this.playerSelectors.indexOf(this.actualSelector) + 1
-    ];
-  }
-
-  previousSelector() {
-    return this.playerSelectors[
-      this.playerSelectors.indexOf(this.actualSelector) - 1
-    ];
-  }
-
-  disableControls() {
-    Object.values(this.controls).forEach(
-      (control) => (control.enabled = false)
-    );
-  }
-
-  enableControls() {
-    Object.values(this.controls).forEach((control) => (control.enabled = true));
+  isOutOfBounds(index, array) {
+    return array.length - 1 < index || index < 0;
   }
 
   handleBack() {
     if (!this.thereIsCharactersSelected()) {
-      // Vuelvo al menu principal
       this.switchScene("MainMenuScene");
-    } else if (this.actualSelector.selectionComplete) {
-      // Deshago la ultima seleccion pero sigo eligiendo con el mismo selector
-      this.actualSelector.selectionComplete = false;
-      this.actualSelector.setTint(0xff0000);
+      this.setDefaultFighter();
+      this.sound.play("select");
     } else {
-      // Vuelvo al selector anterior y oculto el actual
-      this.actualSelector.setVisible(false);
-      this.actualSelector = this.previousSelector();
-      this.actualSelector.selectionComplete = false;
-      this.actualSelector.setTint(0xff0000);
+      // OTRO SONIDO
+
+      this.actualPlayerSelector = this.previousSelector();
+      this.actualPlayerSelector.selectionComplete = false;
+      this.actualPlayerSelector.fighterSelected.selected = false;
+      this.setSelectedFighter(
+        this.actualPlayerSelector.fighterSelected,
+        this.actualPlayerSelector.fighterRow
+      );
     }
   }
 
-  thereIsCharactersSelected() {
-    return this.playerSelectors.some((selector) => selector.selectionComplete);
+  previousSelector() {
+    return this.playerSelectors[
+      this.playerSelectors.indexOf(this.actualPlayerSelector) - 1
+    ];
   }
 
-  switchScene(sceneName) {
-    if (!this.scene.isSleeping(sceneName)) {
-      this.scene.launch(sceneName);
-    } else {
-      this.scene.wake(sceneName);
+  handleFighterSelection() {
+    this.disableControls();
+    this.actualPlayerSelector.handleSelect(
+      this.selectedFighter,
+      this.actualRow
+    );
+  }
+
+  // Al reactivar las teclas, ENTER se debe presionar dos veces para que funcione, por que??????
+  // Arreglar esto
+  handleFighterSelectionAux() {
+    if (this.isSelectionComplete()) {
+      this.switchScene("FightScene", this.fightConf);
+      return;
     }
-    this.scene.moveAbove("MainMenuScene", "sceneName");
-    this.resetSelection();
-    this.scene.sleep();
+    if (this.actualPlayerSelector.selectionComplete) {
+      this.actualPlayerSelector = this.nextPlayerSelector();
+      this.setDefaultFighter();
+    }
+    this.enableControls();
   }
 
-  resetSelectedOption() {
-    this.selectedOption.clearTint();
-    this.selectedOption = this.fighters[0];
-    this.selectedOption.setTint(0xffff00);
-    this.player1Selector.positionLeftBasedOn(this.fighters[0]);
-    this.player2Selector.positionRightBasedOn(this.fighters[0]);
+  nextPlayerSelector() {
+    return this.playerSelectors[
+      this.playerSelectors.indexOf(this.actualPlayerSelector) + 1
+    ];
   }
 
-  isOutOfBounds(index) {
-    return this.fighters.length - 1 < index || index < 0;
-  }
-
-  createFighterSelection(rowsQuantity, fightersPerRow) {
+  createFighterSelection(rowsQuantity, fightersPerRow, scale) {
     let lastSlice = 0;
+    let YPosition = this.conf.gameHeight * 0.2;
+
+    console.log(YPosition);
     for (let indexRow = 1; indexRow <= rowsQuantity; indexRow++) {
       let fighterSliced = fighters.slice(lastSlice, fightersPerRow * indexRow);
       lastSlice += fightersPerRow;
       let row = [];
       let lastXPosition =
         this.conf.gameWidth / 2 -
-        this.conf.characterSelectionDimensions.width * (fightersPerRow / 2 + 1);
+        this.conf.fighterSelectionDimensions.width *
+          scale *
+          (fightersPerRow / 2 + 1);
       fighterSliced.forEach((fighter) => {
-        let newSelection = new FighterSelection(
+        let newSelection = new FighterSelectionContainer(
           this,
-          lastXPosition + this.conf.characterSelectionDimensions.width,
-          this.conf.gameHeight * 0.3 +
-            this.conf.characterSelectionDimensions.height * (indexRow - 1),
+          lastXPosition + this.conf.fighterSelectionDimensions.width * scale,
+          YPosition,
           fighter.selectionTexture,
           fighter.fighterKey,
-          0x0000ff,
-          0xff0000
-        ).setOrigin(0, 0);
-        let newFrame = this.add
-          .sprite(newSelection.x, newSelection.y, "whiteFrame")
-          .setOrigin(0, 0);
+          this.handleFighterSelectionAux
+        ).setScale(1.2);
         row.push(newSelection);
         lastXPosition =
-          lastXPosition + this.conf.characterSelectionDimensions.width;
+          lastXPosition +
+          this.conf.fighterSelectionDimensions.width * scale +
+          2;
       });
 
       while (row.length != fightersPerRow) {
-        let newSelection = new FighterSelection(
+        let newSelection = new FighterSelectionContainerUnknown(
           this,
-          lastXPosition + this.conf.characterSelectionDimensions.width,
-          this.conf.gameHeight * 0.3 +
-            this.conf.characterSelectionDimensions.height * (indexRow - 1),
+          lastXPosition + this.conf.fighterSelectionDimensions.width * scale,
+          YPosition,
           "interrogationMark",
-          "",
-          0x0000ff,
-          0xff0000
-        ).setOrigin(0, 0);
-        let newFrame = this.add
-          .sprite(newSelection.x, newSelection.y, "whiteFrame")
-          .setOrigin(0, 0);
+          this.handleFighterSelectionAux
+        ).setScale(1.2);
         row.push(newSelection);
         lastXPosition =
-          lastXPosition + this.conf.characterSelectionDimensions.width;
+          lastXPosition +
+          this.conf.fighterSelectionDimensions.width * scale +
+          2;
       }
       this.fightersSelection.push(row);
+      YPosition =
+        this.conf.gameHeight * 0.2 +
+        this.conf.fighterSelectionDimensions.height * scale * indexRow +
+        2 * indexRow;
+      console.log(YPosition);
     }
   }
 
-  // Ver si resetear la escena o reusar un metodo como este
-  // resetSelection() {
-  //   this.fightInfo = {};
-  //   this.selectedOption.clearTint();
-  //   this.selectedOption = this.fighters[0];
-  //   this.selectedOption.setTint(0xffff00);
-  // }
+  isSelectionComplete() {
+    return this.playerSelectors.every((selector) => selector.selectionComplete);
+  }
+
+  thereIsCharactersSelected() {
+    return this.playerSelectors.some((selector) => selector.selectionComplete);
+  }
 }
 
 const fighters = [

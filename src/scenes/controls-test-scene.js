@@ -10,7 +10,7 @@ class TestScene extends Phaser.Scene {
   create() {
     this.keyCodes = Phaser.Input.Keyboard.KeyCodes;
 
-    this.add.sprite(200, 300, "knight");
+    this.sprite = this.add.sprite(200, 300, "knight");
 
     this.controls = this.input.keyboard.addKeys({
       moveUp: this.keyCodes.UP,
@@ -38,8 +38,52 @@ class TestScene extends Phaser.Scene {
         .setOrigin(1, 1),
     ];
 
+    this.optionTest = this.add.text(300, 300, "BLINK").setTint(0x0000ff);
+
+    this.blinkTween = this.tweens.timeline({
+      loop: 10,
+      paused: true,
+      targets: this.sprite,
+      tweens: [
+        {
+          tint: 0xff0000,
+          delay: 50,
+          duration: 0,
+        },
+        {
+          tint: 0xffffff,
+          delay: 50,
+          duration: 0,
+        },
+      ],
+    });
+
+    this.time.delayedCall(1000, this.blinkAnimation, [2000], this);
+
+    this.time.delayedCall(4000, this.blinkAnimation, [2000], this);
+
     this.bidemsionalArray = [this.row1, this.row2, this.row3, this.options];
     this.setDefaultOption();
+  }
+
+  blinkAnimation(milliseconds) {
+    let interval = setInterval(() => {
+      this.sprite.setTint(0xff0000);
+    }, 100);
+    let interval2 = setInterval(() => {
+      this.sprite.setTint(0xffffff);
+    }, 200);
+    this.time.delayedCall(
+      milliseconds,
+      () => {
+        clearInterval(interval);
+        clearInterval(interval2);
+        this.sprite.setTint(0xffffff);
+        // Puede ser que esto no sea necesario
+      },
+      [],
+      this
+    );
   }
 
   update() {

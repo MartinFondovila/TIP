@@ -1,4 +1,4 @@
-import { CONF } from "../conf.js";
+import { SHARED_CONF } from "../utils.js";
 
 class BaseScene extends Phaser.Scene {
   constructor(sceneName, pauseOnSwitch, pausePhysicsOnSwitch) {
@@ -11,6 +11,7 @@ class BaseScene extends Phaser.Scene {
     super(sceneName);
     this.keyCodes = Phaser.Input.Keyboard.KeyCodes;
     this.inputPointerEvents = Phaser.Input.Events;
+    this.sceneEvents = Phaser.Scenes.Events;
     this.animationEvents = Phaser.Animations.Events;
     this.inputKeyboard = Phaser.Input.Keyboard;
     this.inputKeyboardEvents = Phaser.Input.Keyboard.Events;
@@ -21,14 +22,8 @@ class BaseScene extends Phaser.Scene {
     this.hasToBePaused = pauseOnSwitch;
     this.hasToPausePhysics = pausePhysicsOnSwitch;
 
-    this.conf = CONF;
+    this.conf = SHARED_CONF;
   }
-
-  preload() {}
-
-  create() {}
-
-  update(time, delta) {}
 
   // Podria funcionar
   switchScene(sceneName, data) {

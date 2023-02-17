@@ -22,6 +22,15 @@ class BaseMenuScene extends BaseScene {
     });
   }
 
+  createBackOption() {
+    this.back = this.add
+      .text(this.conf.gameWidth - 10, this.conf.gameHeight - 10, "BACK", {
+        fontSize: 40,
+      })
+      .setOrigin(1, 1)
+      .setTint(0xffff00);
+  }
+
   disableControls() {
     Object.values(this.controls).forEach(
       (control) => (control.enabled = false)
