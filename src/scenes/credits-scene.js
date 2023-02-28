@@ -13,10 +13,6 @@ class CreditsScene extends BaseMenuScene {
     this.clearArrowsTimeout;
   }
 
-  init() {}
-
-  preload() {}
-
   create() {
     this.createControls();
     this.createCredits();
@@ -44,8 +40,8 @@ class CreditsScene extends BaseMenuScene {
       this.inputKeyboard.JustDown(this.controls.select)
     ) {
       this.selectSound.play();
-      this.switchScene("MainMenuScene");
       this.resetDefault();
+      this.switchScene("MainMenuScene");
     }
   }
 
@@ -206,9 +202,12 @@ class CreditsScene extends BaseMenuScene {
     if (this.disappearSound.isPlaying) {
       this.disappearSound.stop();
     }
+
     if (this.secretTweenIn.isPlaying() || this.secretTweenOut.isPlaying()) {
-      this.secretTweenIn.restart();
-      this.secretTweenOut.restart();
+      this.secretTweenIn.remove();
+      this.secretTweenOut.remove();
+      this.carapan.setAlpha(0);
+      this.createSecretTweens();
     }
   }
 }

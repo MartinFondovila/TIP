@@ -175,7 +175,8 @@ class CharacterSelectionScene extends BaseMenuScene {
   // Arreglar esto
   handleFighterSelectionAux() {
     if (this.isSelectionComplete()) {
-      this.switchScene("FightScene", this.fightConf);
+      this.actualPlayerSelector.setSelectionComplete(false);
+      this.switchScene("MapSelectionScene", this.fightConf);
       return;
     }
     if (this.actualPlayerSelector.selectionComplete) {

@@ -1,0 +1,28 @@
+{
+  "anims": [
+    {
+      "key": "knightCastleMapIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 4,
+      "frames": [
+        {
+          "key": "knightCastleMap",
+          "frame": "0"
+        },
+        {
+          "key": "knightCastleMap",
+          "frame": "1"
+        },
+        {
+          "key": "knightCastleMap",
+          "frame": "2"
+        },
+        {
+          "key": "knightCastleMap",
+          "frame": "3"
+        }
+      ]
+    }
+  ]
+}

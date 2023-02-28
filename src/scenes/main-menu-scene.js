@@ -32,7 +32,7 @@ class MainMenuScene extends BaseMenuScene {
     } else if (this.inputKeyboard.JustDown(this.controls.moveDown)) {
       this.handleChangeOptionDown();
     } else if (this.inputKeyboard.JustDown(this.controls.select)) {
-      this.handleSelectOnOption(this.selectedOption.text);
+      this.handleSelectOnOption();
     }
   }
 

@@ -1,0 +1,56 @@
+{ "frames": {
+   "0": {
+    "frame": { "x": 0, "y": 0, "w": 640, "h": 355 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 5, "w": 640, "h": 355 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "1": {
+    "frame": { "x": 640, "y": 0, "w": 640, "h": 355 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 5, "w": 640, "h": 355 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "2": {
+    "frame": { "x": 0, "y": 355, "w": 640, "h": 355 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 5, "w": 640, "h": 355 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "3": {
+    "frame": { "x": 640, "y": 355, "w": 640, "h": 355 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 5, "w": 640, "h": 355 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "knight-castle.png",
+  "format": "RGBA8888",
+  "size": { "w": 1280, "h": 710 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "backround", "opacity": 255, "blendMode": "normal" },
+   { "name": "castle", "opacity": 255, "blendMode": "normal" },
+   { "name": "stars", "opacity": 255, "blendMode": "normal" },
+   { "name": "wall-torches", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees", "opacity": 255, "blendMode": "normal" },
+   { "name": "floor", "opacity": 255, "blendMode": "normal" },
+   { "name": "moon", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

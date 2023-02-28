@@ -86,32 +86,29 @@ class FightScene extends Phaser.Scene {
   }
 
   createMap() {
-    this.add.image(0, 0, "background").setOrigin(0);
+    this.map = this.add.sprite(0, 0, "ninjaMountainMap").setOrigin(0);
+    this.map.anims.play("ninjaMountainMapIdle");
 
-    this.wall_floor = this.physics.add.staticGroup();
+    // this.wall_floor = this.physics.add.staticGroup();
 
-    this.wall_floor.create(0, 0, "wall").setOrigin(0);
-    this.wall_floor
-      .create(this.scale.width, 0, "wall")
-      .setOrigin(1, 0)
-      .setFlipX(true);
+    // this.wall_floor.create(0, 0, "wall").setOrigin(0);
+    // this.wall_floor
+    //   .create(this.scale.width, 0, "wall")
+    //   .setOrigin(1, 0)
+    //   .setFlipX(true);
 
-    this.wall_floor.create(0, this.scale.height, "floor").setOrigin(0, 1);
+    // this.wall_floor.create(0, this.scale.height, "floor").setOrigin(0, 1);
 
-    this.wall_floor.refresh();
+    // this.wall_floor.refresh();
 
-    this.wall_floor.getChildren()[2].setOffset(0, 15);
+    // this.wall_floor.getChildren()[2].setOffset(0, 15);
   }
 
   createPlayers() {
     let playersControls = this.createPlayersControls();
-    this.player1 = new Knight(
-      this,
-      100,
-      100,
-      playersControls[0],
-      900
-    ).setOrigin(0, 0);
+    this.player1 = new Knight(this, 100, 100, playersControls[0], 900)
+      .setOrigin(0, 0)
+      .setScale(1.7);
     this.player2 = new Knight(this, 300, 300, playersControls[1], 900);
   }
 

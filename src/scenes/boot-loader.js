@@ -106,6 +106,14 @@ class BootLoader extends BaseScene {
     this.load.image("whiteFrame", "white-frame.png");
     this.load.image("knightSelection", "knight-selection.png");
     this.load.image("interrogationMark", "interrogation-mark.png");
+    this.load.image(
+      "ninjaMountainMini",
+      "maps/ninja-mountain-map/ninja-mountain-mini.png"
+    );
+    this.load.image(
+      "knightCastleMini",
+      "maps/knight-castle-map/knight-castle-mini.png"
+    );
   }
 
   loadAtlas() {
@@ -134,11 +142,34 @@ class BootLoader extends BaseScene {
       "arrows/arrows.png",
       "arrows/arrows-atlas.json"
     );
+    this.load.aseprite(
+      "mapsArrows",
+      "maps-arrows/maps-arrows.png",
+      "maps-arrows/maps-arrows-atlas.json"
+    );
+    this.load.aseprite(
+      "knightCastleMap",
+      "maps/knight-castle-map/knight-castle.png",
+      "maps/knight-castle-map/knight-castle-atlas.json"
+    );
+    this.load.aseprite(
+      "ninjaMountainMap",
+      "maps/ninja-mountain-map/ninja-mountain.png",
+      "maps/ninja-mountain-map/ninja-mountain-atlas.json"
+    );
   }
 
   loadAnimations() {
-    this.load.animation("knightAnim", "knight/knight-anims.json");
-    this.load.animation("carapanAnim", "carapan/carapan-anims.json");
+    this.load.animation("knightAnims", "knight/knight-anims.json");
+    this.load.animation("carapanAnims", "carapan/carapan-anims.json");
+    this.load.animation(
+      "knightCastleMapAnims",
+      "maps/knight-castle-map/knight-castle-anims.json"
+    );
+    this.load.animation(
+      "ninjaMountainMapAnims",
+      "maps/ninja-mountain-map/ninja-mountain-anims.json"
+    );
   }
 
   loadAudios() {

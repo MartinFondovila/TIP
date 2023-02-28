@@ -1,0 +1,76 @@
+{ "frames": {
+   "0": {
+    "frame": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "1": {
+    "frame": { "x": 640, "y": 0, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "2": {
+    "frame": { "x": 1280, "y": 0, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "3": {
+    "frame": { "x": 0, "y": 360, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "4": {
+    "frame": { "x": 640, "y": 360, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   },
+   "5": {
+    "frame": { "x": 1280, "y": 360, "w": 640, "h": 360 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 640, "h": 360 },
+    "sourceSize": { "w": 640, "h": 360 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "ninja-map.png",
+  "format": "RGBA8888",
+  "size": { "w": 1920, "h": 720 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "background", "opacity": 255, "blendMode": "normal" },
+   { "name": "mountain", "opacity": 255, "blendMode": "normal" },
+   { "name": "floor", "opacity": 255, "blendMode": "normal" },
+   { "name": "stones", "opacity": 255, "blendMode": "normal" },
+   { "name": "bushes", "opacity": 255, "blendMode": "normal" },
+   { "name": "clouds", "opacity": 255, "blendMode": "normal" },
+   { "name": "trees", "opacity": 255, "blendMode": "normal" },
+   { "name": "birds", "opacity": 255, "blendMode": "normal" },
+   { "name": "lantern", "opacity": 255, "blendMode": "normal" },
+   { "name": "entrance", "opacity": 255, "blendMode": "normal" },
+   { "name": "sun", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

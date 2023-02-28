@@ -3,10 +3,11 @@ import CharacterSelectionScene from "./scenes/character-selection-scene.js";
 import FightScene from "./scenes/fight-scene.js";
 import MainMenuScene from "./scenes/main-menu-scene.js";
 import PauseMenuScene from "./scenes/pause-menu-scene.js";
-import MapSelectionScene from "./scenes/map-selection-scene.js";
+import MapSelectionScene from "./scenes/map-selection-scene3.js";
 import CreditsScene from "./scenes/credits-scene.js";
 import IntroScene from "./scenes/intro-scene.js";
 import TestScene from "./scenes/controls-test-scene.js";
+import OptionsScene from "./scenes/options-scene.js";
 
 const config = {
   title: "Curso Phaser",
@@ -64,6 +65,7 @@ const config = {
     CharacterSelectionScene,
     PauseMenuScene,
     CreditsScene,
+    OptionsScene,
   ],
 };
 
