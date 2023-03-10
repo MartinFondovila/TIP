@@ -57,9 +57,11 @@ export const MAPS = [
   {
     name: "KNIGHT CASTLE",
     texture: "knightCastleMini",
+    mapKey: "knightCastleMap",
   },
   {
     name: "NINJA MOUNTAIN",
     texture: "ninjaMountainMini",
+    mapKey: "ninjaMountainMap",
   },
 ];

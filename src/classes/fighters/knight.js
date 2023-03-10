@@ -9,8 +9,8 @@ export class Knight extends Fighter {
     this.healthBar = new HealthBar(scene, 200, 0, this.healthPoints);
     this.body.setGravityY(gravity);
 
-    this.fist = new Fist(scene, x - 15, y + 30, "fist", 10, this);
-    this.fist.setCollideWorldBounds(true);
+    //this.fist = new Fist(scene, x - 15, y + 30, "fist", 10, this);
+    //this.fist.setCollideWorldBounds(true);
 
     //this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
   }
@@ -19,9 +19,9 @@ export class Knight extends Fighter {
   setAnimationsOnMap() {
     this.animationsMap.set("idle", "knightIdle");
     this.animationsMap.set("walking", "knightWalking");
-    this.animationsMap.set("jumping", "jumpingKnight");
-    this.animationsMap.set("falling", "fallingKnight");
-    this.animationsMap.set("attacking", "attackingKnight");
-    this.animationsMap.set("defeated", "knightIdle");
+    this.animationsMap.set("jumping", "knightJumping");
+    this.animationsMap.set("falling", "knightFalling");
+    this.animationsMap.set("attacking", "knightAttacking");
+    this.animationsMap.set("defeated", "knightDefeated");
   }
 }

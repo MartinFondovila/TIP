@@ -2,11 +2,12 @@ import { Knight } from "../classes/fighters/knight.js";
 import { PlayerContainer } from "../classes/player-container/player-container.js";
 import { MatchTimer } from "../classes/timer/match-timer.js";
 import { PreTimer } from "../classes/timer/pre-timer.js";
+import BaseScene from "./base-scene.js";
 
 // PASAR LAS PARTES DEL create() a funciones separadas
-class FightScene extends Phaser.Scene {
+class FightScene extends BaseScene {
   constructor() {
-    super("FightScene");
+    super("FightScene", true, true);
     this.player1;
     this.player2;
     this.matchTimer;
@@ -15,13 +16,17 @@ class FightScene extends Phaser.Scene {
     this.keyCodes = Phaser.Input.Keyboard.KeyCodes;
   }
 
-  init() {}
+  init(fightConf) {
+    console.log(fightConf);
+    this.fightConf = fightConf;
+  }
 
   preload() {}
 
   create() {
     this.createMap();
     this.createPlayers();
+    //this.createColliders();
     this.createSceneControls();
 
     // this.player1Container = new PlayerContainer(
@@ -72,7 +77,7 @@ class FightScene extends Phaser.Scene {
     //Colisiones;
     this.physics.add.collider(
       [this.player1Container, this.player1, this.player2],
-      this.wall_floor
+      this.mapFloor
     );
   }
 
@@ -86,8 +91,21 @@ class FightScene extends Phaser.Scene {
   }
 
   createMap() {
-    this.map = this.add.sprite(0, 0, "ninjaMountainMap").setOrigin(0);
-    this.map.anims.play("ninjaMountainMapIdle");
+    this.map = this.add.sprite(0, 0, this.fightConf.mapKey).setOrigin(0, 0);
+    this.map.anims.play(this.fightConf.mapKey + "Idle");
+
+    console.log(this.conf.gameWidth);
+    // Ver si hay forma de hacerlo con un static group
+
+    // this.mapFloor = this.physics.add
+    //   .staticGroup()
+    //   .scaleXY(this.conf.gameWidth, 18);
+
+    // this.mapFloor
+    //   .create(0, this.conf.gameHeight, null, null, false)
+    //   .setOrigin(0, 1);
+
+    // this.mapFloor.refresh();
 
     // this.wall_floor = this.physics.add.staticGroup();
 

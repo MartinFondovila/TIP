@@ -31,6 +31,7 @@ class BaseScene extends Phaser.Scene {
   }
 
   createVolumeUpdaters() {
+    // No se ejecuta ni bien se crea
     this.musicVolumeUpdater = reaction(
       () => {
         return MUSIC_VOLUME.musicVolume;
@@ -39,9 +40,7 @@ class BaseScene extends Phaser.Scene {
         console.log(this.keyName);
         console.log("holasDesdeMusicUpdater");
         console.log(MUSIC_VOLUME.musicVolume);
-        this.musicThemes.forEach((music) => {
-          music.setVolume(musicVolume);
-        });
+        this.updateMusicVolume(musicVolume);
       }
     );
 
@@ -50,11 +49,24 @@ class BaseScene extends Phaser.Scene {
       (sfxVolume) => {
         console.log("holas2");
         console.log(this);
-        this.sfxSounds.forEach((sfxSound) => {
-          sfxSound.setVolume(sfxVolume);
-        });
+        this.updateSFXVolume(sfxVolume);
       }
     );
+
+    this.updateMusicVolume(MUSIC_VOLUME.musicVolume);
+    this.updateSFXVolume(SFX_VOLUME.sfxVolume);
+  }
+
+  updateMusicVolume(musicVolume) {
+    this.musicThemes.forEach((music) => {
+      music.setVolume(musicVolume);
+    });
+  }
+
+  updateSFXVolume(sfxVolume) {
+    this.sfxSounds.forEach((sfxSound) => {
+      sfxSound.setVolume(sfxVolume);
+    });
   }
 
   // Podria funcionar

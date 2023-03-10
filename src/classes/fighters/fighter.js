@@ -314,6 +314,6 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
   update(deltaTime) {
     this.stateMachine.update(deltaTime);
-    this.fist.update(deltaTime);
+    //this.fist.update(deltaTime);
   }
 }

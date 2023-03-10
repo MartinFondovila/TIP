@@ -1,7 +1,8 @@
 export class MapContainer extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, mapName, texture, scale) {
+  constructor(scene, x, y, mapName, texture, mapKey) {
     super(scene, x, y);
     this.scene.add.existing(this);
+    this.mapKey = mapKey;
     this.map = scene.add.sprite(0, 0, texture, 0).setOrigin(0, 0);
     //.setScale(scale);
     this.name = scene.add

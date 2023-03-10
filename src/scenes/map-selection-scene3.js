@@ -9,11 +9,19 @@ class MapSelectionScene extends BaseMenuScene {
     this.selectedMap;
   }
 
+  init(data) {
+    console.log("DATA EN LE INIT");
+    console.log(data);
+    this.fightConf = { ...data };
+  }
+
   create() {
     this.createControls();
     this.createBackOption();
     this.createMaps();
     this.createArrows();
+    this.createSounds();
+    this.createListeners();
     this.setDefaultMap();
   }
 
@@ -23,8 +31,7 @@ class MapSelectionScene extends BaseMenuScene {
     } else if (this.inputKeyboard.JustDown(this.controls.moveLeft)) {
       this.handleChangeOptionLeft();
     } else if (this.inputKeyboard.JustDown(this.controls.select)) {
-      // handle on enter
-      this.switchScene("FightScene");
+      this.handleSelect();
     } else if (this.inputKeyboard.JustDown(this.controls.back)) {
       this.handleBack();
     }
@@ -44,13 +51,21 @@ class MapSelectionScene extends BaseMenuScene {
     MAPS.forEach((map) => {
       let newMap = new MapContainer(
         this,
-        this.conf.gameWidth / 2 - this.conf.mapDisplaySelection.width / 2, //* this.conf.mapSelectionScale,
+        this.conf.gameWidth / 2 - this.conf.mapDisplaySelection.width / 2,
         this.conf.gameHeight * 0.2,
         map.name,
-        map.texture
-        //this.conf.mapSelectionScale
+        map.texture,
+        map.mapKey
       ).setVisible(false);
       this.maps.push(newMap);
+    });
+  }
+
+  createListeners() {
+    this.events.on(this.sceneEvents.WAKE, (data) => {
+      console.log("DATA EN LE WAKE");
+      console.log(data);
+      this.fightConf = { ...data };
     });
   }
 
@@ -70,6 +85,7 @@ class MapSelectionScene extends BaseMenuScene {
   }
 
   handleChangeOptionLeft() {
+    this.changeSound.play();
     this.leftArrow.setAlpha(1);
     let nextOptionIndex = this.maps.indexOf(this.selectedMap) + 1;
     if (this.isOutOfBounds(nextOptionIndex)) {
@@ -80,6 +96,7 @@ class MapSelectionScene extends BaseMenuScene {
   }
 
   handleChangeOptionRight() {
+    this.changeSound.play();
     this.rightArrow.setAlpha(1);
     let nextOptionIndex = this.maps.indexOf(this.selectedMap) - 1;
     if (this.isOutOfBounds(nextOptionIndex)) {
@@ -90,9 +107,24 @@ class MapSelectionScene extends BaseMenuScene {
   }
 
   handleBack() {
+    this.selectSound.play();
     this.switchScene("CharacterSelectionScene");
     this.setDefaultMap();
     // Agregar sonido
+  }
+
+  handleSelect() {
+    this.disableControls();
+    this.fightConf.mapKey = this.selectedMap.mapKey;
+    this.switchScene("FightScene", this.fightConf);
+    this.enableControls();
+  }
+
+  createSounds() {
+    this.changeSound = this.sound.add("changeOption");
+    this.selectSound = this.sound.add("select");
+
+    this.sfxSounds = [this.changeSound, this.selectSound];
   }
 
   setDefaultMap() {

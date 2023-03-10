@@ -20,6 +20,7 @@ class MainMenuScene extends BaseMenuScene {
     this.createOptions();
     this.setDefaultOption();
     this.createAudios();
+    this.createVolumeUpdaters();
     this.cameras.main
       .fadeIn(2000, 255, 255, 255)
       .on(this.camerasEvents.FADE_IN_COMPLETE, this.enableControls, this);
@@ -114,6 +115,8 @@ class MainMenuScene extends BaseMenuScene {
   createAudios() {
     this.changeOptionSound = this.sound.add("changeOption");
     this.selectSound = this.sound.add("select");
+
+    this.sfxSounds = [this.changeOptionSound, this.selectSound];
   }
 
   setSelectedOption(option) {

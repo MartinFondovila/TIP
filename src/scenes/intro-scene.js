@@ -41,7 +41,11 @@ class IntroScene extends BaseScene {
         "knightFist"
       )
       .setScale(4)
-      .setOrigin(0, 0.5);
+      .setOrigin(0, 0.5)
+      .setBodySize(
+        this.conf.fistDimensions.width,
+        this.conf.fistDimensions.height
+      );
     this.secondFist = this.physics.add
       .sprite(
         this.conf.gameWidth - this.conf.gameWidth * 0.2,
@@ -50,7 +54,11 @@ class IntroScene extends BaseScene {
       )
       .setScale(4)
       .setOrigin(1, 0.5)
-      .setFlip(true);
+      .setFlip(true)
+      .setBodySize(
+        this.conf.fistDimensions.width,
+        this.conf.fistDimensions.height
+      );
   }
 
   createClash() {

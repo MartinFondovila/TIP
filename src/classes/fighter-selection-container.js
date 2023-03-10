@@ -1,5 +1,13 @@
 export class FighterSelectionContainer extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, texture, fighterKey, selectionCallback) {
+  constructor(
+    scene,
+    x,
+    y,
+    texture,
+    fighterKey,
+    fighterAnimsKey,
+    selectionCallback
+  ) {
     super(scene, x, y);
     this.scene.add.existing(this);
     this.fighterFace = scene.add.sprite(0, 0, texture, 0).setOrigin(0, 0);
@@ -9,6 +17,7 @@ export class FighterSelectionContainer extends Phaser.GameObjects.Container {
       .setOrigin(0, 0);
     this.add([this.fighterFace, this.leftFrame, this.rightFrame]);
     this.fighterKey = fighterKey;
+    this.fighterAnimsKey = fighterAnimsKey;
     this.selectionCallback = selectionCallback;
     this.selected = false;
   }

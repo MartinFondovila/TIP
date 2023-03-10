@@ -10,7 +10,7 @@ import TestScene from "./scenes/controls-test-scene.js";
 import OptionsScene from "./scenes/options-scene.js";
 
 const config = {
-  title: "Curso Phaser",
+  title: "Clash of Fists",
   url: "http://google.es",
   version: "0.0.1",
 

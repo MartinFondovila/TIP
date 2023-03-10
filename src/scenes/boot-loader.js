@@ -99,9 +99,6 @@ class BootLoader extends BaseScene {
   loadImages() {
     this.load.image(["background", "floor", "wall"]);
     this.load.image("introClash", "intro-clash.png");
-    this.load.image("fist", "fist.png");
-    this.load.image("knightFist", "knight-fist.png");
-    this.load.image("ninjaFist", "ninja-fist.png");
     this.load.image("clashOfFistsLogo", "clash-of-fists-logo.png");
     this.load.image("whiteFrame", "white-frame.png");
     this.load.image("knightSelection", "knight-selection.png");
@@ -121,6 +118,16 @@ class BootLoader extends BaseScene {
       "knight",
       "knight/knight.png",
       "knight/knight-atlas.json"
+    );
+    this.load.aseprite(
+      "knightFist",
+      "knight/fist/knight-fist.png",
+      "knight/fist/knight-fist-atlas.json"
+    );
+    this.load.aseprite(
+      "ninjaFist",
+      "ninja/fist/ninja-fist.png",
+      "ninja/fist/ninja-fist-atlas.json"
     );
     this.load.aseprite(
       "arrows",
@@ -148,6 +155,11 @@ class BootLoader extends BaseScene {
       "maps-arrows/maps-arrows-atlas.json"
     );
     this.load.aseprite(
+      "optionsArrows",
+      "options-arrows/option-arrows.png",
+      "options-arrows/option-arrows-atlas.json"
+    );
+    this.load.aseprite(
       "knightCastleMap",
       "maps/knight-castle-map/knight-castle.png",
       "maps/knight-castle-map/knight-castle-atlas.json"
@@ -161,6 +173,11 @@ class BootLoader extends BaseScene {
 
   loadAnimations() {
     this.load.animation("knightAnims", "knight/knight-anims.json");
+    this.load.animation(
+      "knightFistAnims",
+      "knight/fist/knight-fist-anims.json"
+    );
+    this.load.animation("ninjaFistAnims", "ninja/fist/ninja-fist-anims.json");
     this.load.animation("carapanAnims", "carapan/carapan-anims.json");
     this.load.animation(
       "knightCastleMapAnims",
@@ -181,6 +198,8 @@ class BootLoader extends BaseScene {
     this.load.audio("blocked", ["audio/blocked.wav"]);
     this.load.audio("select", ["audio/select.wav"]);
     this.load.audio("selectFighter", ["audio/select-fighter.wav"]);
+    this.load.audio("block", ["audio/block.wav"]);
+    this.load.audio("unselect", ["audio/unselect.wav"]);
   }
 }
 

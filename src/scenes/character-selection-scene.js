@@ -17,7 +17,9 @@ class CharacterSelectionScene extends BaseMenuScene {
   create() {
     this.createControls();
     this.createBackOption();
+    this.createSounds();
     this.createFighterSelection(3, 3, 1.2);
+    this.createVolumeUpdaters();
     this.createPlayersSelectors();
     this.setDefaultFighter();
   }
@@ -32,18 +34,33 @@ class CharacterSelectionScene extends BaseMenuScene {
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.moveRight)) {
       this.handleChangeOptionRight();
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.select)) {
+      this.disableControls();
       this.handleFighterSelection();
       console.log("enter");
     } else if (Phaser.Input.Keyboard.JustDown(this.controls.back)) {
+      this.disableControls();
       this.handleBack();
     }
   }
 
   // Se puede hacer un loop para crearlos
   createPlayersSelectors() {
-    let player1Selector = new PlayerSelector("player1Fighter", 0x0000ff);
+    let player1Selector = new PlayerSelector(
+      this,
+      "player1Fighter",
+      0x0000ff,
+      30,
+      this.conf.gameHeight / 2
+    );
 
-    let player2Selector = new PlayerSelector("player2Fighter", 0xff0000);
+    let player2Selector = new PlayerSelector(
+      this,
+      "player2Fighter",
+      0xff0000,
+      this.conf.gameWidth - 30,
+      this.conf.gameHeight / 2,
+      true
+    );
 
     this.playerSelectors.push(player1Selector, player2Selector);
 
@@ -67,6 +84,7 @@ class CharacterSelectionScene extends BaseMenuScene {
       this.fightersSelection[0]
     );
     this.selectedFighter.handleTint(this.actualPlayerSelector.tint);
+    this.actualPlayerSelector.handleChangeFighterSelected(this.selectedFighter);
   }
 
   handleChangeOptionDown() {
@@ -75,10 +93,9 @@ class CharacterSelectionScene extends BaseMenuScene {
     if (this.isOutOfBounds(nextArrayIndex, this.fightersSelection)) {
       console.log("out");
       let firstRow = this.fightersSelection[0];
-      this.setSelectedFighter(
-        firstRow[this.actualRow.indexOf(this.selectedFighter)],
-        firstRow
-      );
+      let nextFighter = firstRow[this.actualRow.indexOf(this.selectedFighter)];
+      this.setSelectedFighter(nextFighter, firstRow);
+      this.actualPlayerSelector.handleChangeFighterSelected(nextFighter);
     } else {
       let nextFighter =
         this.fightersSelection[nextArrayIndex][
@@ -88,6 +105,7 @@ class CharacterSelectionScene extends BaseMenuScene {
         nextFighter,
         this.fightersSelection[nextArrayIndex]
       );
+      this.actualPlayerSelector.handleChangeFighterSelected(nextFighter);
     }
   }
 
@@ -99,10 +117,9 @@ class CharacterSelectionScene extends BaseMenuScene {
     if (this.isOutOfBounds(nextArrayIndex, this.fightersSelection)) {
       console.log("out");
       let lastRow = this.fightersSelection[this.fightersSelection.length - 1];
-      this.setSelectedFighter(
-        lastRow[this.actualRow.indexOf(this.selectedFighter)],
-        lastRow
-      );
+      let nextFighter = lastRow[this.actualRow.indexOf(this.selectedFighter)];
+      this.setSelectedFighter(nextFighter, lastRow);
+      this.actualPlayerSelector.handleChangeFighterSelected(nextFighter);
     } else {
       let nextFighter =
         this.fightersSelection[nextArrayIndex][
@@ -112,6 +129,7 @@ class CharacterSelectionScene extends BaseMenuScene {
         nextFighter,
         this.fightersSelection[nextArrayIndex]
       );
+      this.actualPlayerSelector.handleChangeFighterSelected(nextFighter);
     }
   }
 
@@ -120,8 +138,12 @@ class CharacterSelectionScene extends BaseMenuScene {
     console.log(nextOptionIndex);
     if (this.isOutOfBounds(nextOptionIndex, this.actualRow)) {
       this.setSelectedFighter(this.actualRow[0]);
+      this.actualPlayerSelector.handleChangeFighterSelected(this.actualRow[0]);
     } else {
       this.setSelectedFighter(this.actualRow[nextOptionIndex]);
+      this.actualPlayerSelector.handleChangeFighterSelected(
+        this.actualRow[nextOptionIndex]
+      );
     }
   }
 
@@ -130,8 +152,14 @@ class CharacterSelectionScene extends BaseMenuScene {
     console.log(nextOptionIndex);
     if (this.isOutOfBounds(nextOptionIndex, this.actualRow)) {
       this.setSelectedFighter(this.actualRow[this.actualRow.length - 1]);
+      this.actualPlayerSelector.handleChangeFighterSelected(
+        this.actualRow[this.actualRow.length - 1]
+      );
     } else {
       this.setSelectedFighter(this.actualRow[nextOptionIndex]);
+      this.actualPlayerSelector.handleChangeFighterSelected(
+        this.actualRow[nextOptionIndex]
+      );
     }
   }
 
@@ -139,44 +167,58 @@ class CharacterSelectionScene extends BaseMenuScene {
     return array.length - 1 < index || index < 0;
   }
 
+  // BUG SI SE SPAMEA MUY RAPIDO ESQ Y ENTER ENTRE VERSUS Y MENU PRINCIPAL
+  // BUG SI SE APRETA AL MISMO TIEMPO ESQ Y ENTER SE HANDELEA AMBOS, ESTO NO DEBERIA PASAR
   handleBack() {
+    console.log(this.actualPlayerSelector);
+    console.log("BACK PARA UNDEFINED");
     if (!this.thereIsCharactersSelected()) {
       this.switchScene("MainMenuScene");
       this.setDefaultFighter();
-      this.sound.play("select");
+      this.selectSound.play();
     } else {
-      // OTRO SONIDO
-
+      this.unselectSound.play();
+      this.actualPlayerSelector.stopPreview();
+      console.log(this.actualPlayerSelector);
+      console.log(this.previousSelector());
       this.actualPlayerSelector = this.previousSelector();
-      this.actualPlayerSelector.selectionComplete = false;
+      console.log(this.actualPlayerSelector);
+      this.actualPlayerSelector.setSelectionComplete(false);
+      console.log(this.actualPlayerSelector);
       this.actualPlayerSelector.fighterSelected.selected = false;
       this.setSelectedFighter(
         this.actualPlayerSelector.fighterSelected,
         this.actualPlayerSelector.fighterRow
       );
     }
+    this.enableControls();
   }
 
   previousSelector() {
-    return this.playerSelectors[
-      this.playerSelectors.indexOf(this.actualPlayerSelector) - 1
-    ];
+    if (this.playerSelectors.indexOf(this.actualPlayerSelector) == 0) {
+      return this.playerSelectors[0];
+    } else {
+      return this.playerSelectors[
+        this.playerSelectors.indexOf(this.actualPlayerSelector) - 1
+      ];
+    }
   }
 
   handleFighterSelection() {
+    console.log("ENTER PARA UNDEFINED");
     this.disableControls();
-    this.actualPlayerSelector.handleSelect(
-      this.selectedFighter,
-      this.actualRow
-    );
+    this.actualPlayerSelector.handleSelect(this.actualRow);
   }
 
   // Al reactivar las teclas, ENTER se debe presionar dos veces para que funcione, por que??????
   // Arreglar esto
   handleFighterSelectionAux() {
+    console.log(this.actualPlayerSelector);
+    console.log("ENTER PARA UNDEFINED");
     if (this.isSelectionComplete()) {
-      this.actualPlayerSelector.setSelectionComplete(false);
       this.switchScene("MapSelectionScene", this.fightConf);
+      this.actualPlayerSelector.setSelectionComplete(false);
+      console.log(this.fightConf);
       return;
     }
     if (this.actualPlayerSelector.selectionComplete) {
@@ -184,6 +226,8 @@ class CharacterSelectionScene extends BaseMenuScene {
       this.setDefaultFighter();
     }
     this.enableControls();
+    console.log(this.actualPlayerSelector);
+    console.log("ENTER PARA UNDEFINED");
   }
 
   nextPlayerSelector() {
@@ -213,6 +257,7 @@ class CharacterSelectionScene extends BaseMenuScene {
           YPosition,
           fighter.selectionTexture,
           fighter.fighterKey,
+          fighter.fighterAnimsKey,
           this.handleFighterSelectionAux
         ).setScale(1.2);
         row.push(newSelection);
@@ -252,10 +297,21 @@ class CharacterSelectionScene extends BaseMenuScene {
   thereIsCharactersSelected() {
     return this.playerSelectors.some((selector) => selector.selectionComplete);
   }
+
+  createSounds() {
+    this.selectSound = this.sound.add("select");
+    this.unselectSound = this.sound.add("unselect");
+
+    this.sfxSounds = [this.selectSound, this.unselectSound];
+  }
 }
 
 const fighters = [
-  { selectionTexture: "knightSelection", fighterKey: "knight" },
+  {
+    selectionTexture: "knightSelection",
+    fighterKey: "Knight",
+    fighterAnimsKey: "knight",
+  },
 ];
 
 export default CharacterSelectionScene;

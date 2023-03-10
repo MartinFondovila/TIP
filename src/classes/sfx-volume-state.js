@@ -7,7 +7,7 @@ class SFXVolumeState {
   }
 
   setVolume(number) {
-    this.musicVolume = number;
+    this.sfxVolume = number;
   }
 }
 

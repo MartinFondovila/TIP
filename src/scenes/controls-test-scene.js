@@ -22,6 +22,10 @@ class TestScene extends Phaser.Scene {
 
     this.row1 = [this.add.text(300, 100, "1"), this.add.text(340, 100, "2")];
 
+    this.wow = this.add.sprite(100, 100).anims.play("knightIdle");
+
+    this.time.delayedCall(4000, this.wow.setTexture, [null], this.wow);
+
     this.row2 = [
       this.add.text(280, 150, "3"),
       this.add.text(320, 150, "4"),
