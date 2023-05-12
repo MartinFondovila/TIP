@@ -61,4 +61,9 @@ Clash of Fists se encuentra disponible en **chi.io** con el siguiente enlace
 - Phaser framework para desarrollar el videojuego
 - Node para el desarrollo local, ya que el juego corre del lado del cliente
 - Mobx para la actualización de los efectos de volumen en el juego
-- 
+
+## Documentación (pendiente)
+
+## Aclaración
+
+**Este proyecto todavia se encuentra en desarrollo**
