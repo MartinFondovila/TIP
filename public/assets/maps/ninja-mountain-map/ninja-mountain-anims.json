@@ -1,0 +1,36 @@
+{
+  "anims": [
+    {
+      "key": "ninjaMountainMapIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "ninjaMountainMap",
+          "frame": "0"
+        },
+        {
+          "key": "ninjaMountainMap",
+          "frame": "1"
+        },
+        {
+          "key": "ninjaMountainMap",
+          "frame": "2"
+        },
+        {
+          "key": "ninjaMountainMap",
+          "frame": "3"
+        },
+        {
+          "key": "ninjaMountainMap",
+          "frame": "4"
+        },
+        {
+          "key": "ninjaMountainMap",
+          "frame": "5"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "anims": [
+    {
+      "key": "carapanIdle",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "carapan",
+          "frame": "0"
+        },
+        {
+          "key": "carapan",
+          "frame": "1"
+        },
+        {
+          "key": "carapan",
+          "frame": "2"
+        },
+        {
+          "key": "carapan",
+          "frame": "3"
+        },
+        {
+          "key": "carapan",
+          "frame": "4"
+        },
+        {
+          "key": "carapan",
+          "frame": "5"
+        },
+        {
+          "key": "carapan",
+          "frame": "6"
+        },
+        {
+          "key": "carapan",
+          "frame": "7"
+        },
+        {
+          "key": "carapan",
+          "frame": "8"
+        }
+      ]
+    }
+  ]
+}

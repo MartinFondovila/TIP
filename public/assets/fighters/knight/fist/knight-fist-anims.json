@@ -1,0 +1,72 @@
+{
+  "anims": [
+    {
+      "key": "knightFistIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "knightFist",
+          "frame": "0"
+        },
+        {
+          "key": "knightFist",
+          "frame": "1"
+        },
+        {
+          "key": "knightFist",
+          "frame": "2"
+        },
+        {
+          "key": "knightFist",
+          "frame": "3"
+        }
+      ]
+    },
+    {
+      "key": "knightFistDamaged",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "knightFist",
+          "frame": "4"
+        },
+        {
+          "key": "knightFist",
+          "frame": "5"
+        },
+        {
+          "key": "knightFist",
+          "frame": "6"
+        },
+        {
+          "key": "knightFist",
+          "frame": "7"
+        }
+      ]
+    },
+    {
+      "key": "knightFistVictoryPose",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "knightFist",
+          "frame": "8"
+        },
+        {
+          "key": "knightFist",
+          "frame": "9"
+        },
+        {
+          "key": "knightFist",
+          "frame": "10"
+        }
+      ]
+    }
+  ]
+}

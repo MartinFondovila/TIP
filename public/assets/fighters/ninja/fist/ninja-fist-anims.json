@@ -1,0 +1,72 @@
+{
+  "anims": [
+    {
+      "key": "ninjaFistIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "ninjaFist",
+          "frame": "0"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "1"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "2"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "3"
+        }
+      ]
+    },
+    {
+      "key": "ninjaFistDamaged",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "ninjaFist",
+          "frame": "4"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "5"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "6"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "7"
+        }
+      ]
+    },
+    {
+      "key": "ninjaFistVictoryPose",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "ninjaFist",
+          "frame": "8"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "9"
+        },
+        {
+          "key": "ninjaFist",
+          "frame": "10"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "anims": [
+    {
+      "key": "shurikenIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "shuriken",
+          "frame": "0"
+        },
+        {
+          "key": "shuriken",
+          "frame": "1"
+        },
+        {
+          "key": "shuriken",
+          "frame": "2"
+        },
+        {
+          "key": "shuriken",
+          "frame": "3"
+        }
+      ]
+    },
+    {
+      "key": "shurikenDamaged",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "shuriken",
+          "frame": "4"
+        },
+        {
+          "key": "shuriken",
+          "frame": "5"
+        },
+        {
+          "key": "shuriken",
+          "frame": "6"
+        },
+        {
+          "key": "shuriken",
+          "frame": "7"
+        }
+      ]
+    },
+    {
+      "key": "shurikenVictoryPose",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "shuriken",
+          "frame": "8"
+        },
+        {
+          "key": "shuriken",
+          "frame": "9"
+        },
+        {
+          "key": "shuriken",
+          "frame": "10"
+        }
+      ]
+    }
+  ]
+}

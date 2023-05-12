@@ -1,0 +1,304 @@
+{
+  "anims": [
+    {
+      "key": "knightIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "0"
+        },
+        {
+          "key": "knight",
+          "frame": "1"
+        },
+        {
+          "key": "knight",
+          "frame": "2"
+        },
+        {
+          "key": "knight",
+          "frame": "3"
+        },
+        {
+          "key": "knight",
+          "frame": "4"
+        }
+      ]
+    },
+    {
+      "key": "knightDamaged",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "5"
+        },
+        {
+          "key": "knight",
+          "frame": "6"
+        },
+        {
+          "key": "knight",
+          "frame": "7"
+        },
+        {
+          "key": "knight",
+          "frame": "8"
+        }
+      ]
+    },
+    {
+      "key": "knightWalking",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "9"
+        },
+        {
+          "key": "knight",
+          "frame": "10"
+        },
+        {
+          "key": "knight",
+          "frame": "11"
+        },
+        {
+          "key": "knight",
+          "frame": "12"
+        },
+        {
+          "key": "knight",
+          "frame": "13"
+        },
+        {
+          "key": "knight",
+          "frame": "14"
+        },
+        {
+          "key": "knight",
+          "frame": "15"
+        },
+        {
+          "key": "knight",
+          "frame": "16"
+        }
+      ]
+    },
+    {
+      "key": "knightJumping",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "17"
+        },
+        {
+          "key": "knight",
+          "frame": "18"
+        },
+        {
+          "key": "knight",
+          "frame": "19"
+        }
+      ]
+    },
+    {
+      "key": "knightFalling",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 15,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "20"
+        },
+        {
+          "key": "knight",
+          "frame": "21"
+        },
+        {
+          "key": "knight",
+          "frame": "22"
+        }
+      ]
+    },
+    {
+      "key": "knightAttacking",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "23"
+        },
+        {
+          "key": "knight",
+          "frame": "24"
+        },
+        {
+          "key": "knight",
+          "frame": "25"
+        }
+      ]
+    },
+    {
+      "key": "knightJumpingAttack",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "26"
+        },
+        {
+          "key": "knight",
+          "frame": "27"
+        },
+        {
+          "key": "knight",
+          "frame": "28"
+        }
+      ]
+    },
+    {
+      "key": "knightFallingAttack",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "29"
+        },
+        {
+          "key": "knight",
+          "frame": "30"
+        },
+        {
+          "key": "knight",
+          "frame": "31"
+        }
+      ]
+    },
+    {
+      "key": "knightBlocking",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "32"
+        },
+        {
+          "key": "knight",
+          "frame": "33"
+        },
+        {
+          "key": "knight",
+          "frame": "34"
+        },
+        {
+          "key": "knight",
+          "frame": "35"
+        }
+      ]
+    },
+    {
+      "key": "knightVictoryPose",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "36"
+        },
+        {
+          "key": "knight",
+          "frame": "37"
+        },
+        {
+          "key": "knight",
+          "frame": "38"
+        }
+      ]
+    },
+    {
+      "key": "knightDefeated",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "39"
+        },
+        {
+          "key": "knight",
+          "frame": "40"
+        },
+        {
+          "key": "knight",
+          "frame": "41"
+        },
+        {
+          "key": "knight",
+          "frame": "42"
+        }
+      ]
+    },
+    {
+      "key": "knightJumpingBlock",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "43"
+        },
+        {
+          "key": "knight",
+          "frame": "44"
+        },
+        {
+          "key": "knight",
+          "frame": "45"
+        }
+      ]
+    },
+    {
+      "key": "knightFallingBlock",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "knight",
+          "frame": "46"
+        },
+        {
+          "key": "knight",
+          "frame": "47"
+        },
+        {
+          "key": "knight",
+          "frame": "48"
+        }
+      ]
+    }
+  ]
+}

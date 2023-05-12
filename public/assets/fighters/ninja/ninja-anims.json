@@ -1,0 +1,296 @@
+{
+  "anims": [
+    {
+      "key": "ninjaIdle",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "0"
+        },
+        {
+          "key": "ninja",
+          "frame": "1"
+        },
+        {
+          "key": "ninja",
+          "frame": "2"
+        },
+        {
+          "key": "ninja",
+          "frame": "3"
+        }
+      ]
+    },
+    {
+      "key": "ninjaDamaged",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "4"
+        },
+        {
+          "key": "ninja",
+          "frame": "5"
+        },
+        {
+          "key": "ninja",
+          "frame": "6"
+        },
+        {
+          "key": "ninja",
+          "frame": "7"
+        }
+      ]
+    },
+    {
+      "key": "ninjaWalking",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "8"
+        },
+        {
+          "key": "ninja",
+          "frame": "9"
+        },
+        {
+          "key": "ninja",
+          "frame": "10"
+        },
+        {
+          "key": "ninja",
+          "frame": "11"
+        },
+        {
+          "key": "ninja",
+          "frame": "12"
+        },
+        {
+          "key": "ninja",
+          "frame": "13"
+        },
+        {
+          "key": "ninja",
+          "frame": "14"
+        },
+        {
+          "key": "ninja",
+          "frame": "15"
+        }
+      ]
+    },
+    {
+      "key": "ninjaJumping",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "16"
+        },
+        {
+          "key": "ninja",
+          "frame": "17"
+        },
+        {
+          "key": "ninja",
+          "frame": "18"
+        }
+      ]
+    },
+    {
+      "key": "ninjaFalling",
+      "type": "frames",
+      "repeat": -1,
+      "frameRate": 15,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "19"
+        },
+        {
+          "key": "ninja",
+          "frame": "20"
+        },
+        {
+          "key": "ninja",
+          "frame": "21"
+        }
+      ]
+    },
+    {
+      "key": "ninjaAttacking",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "22"
+        },
+        {
+          "key": "ninja",
+          "frame": "23"
+        },
+        {
+          "key": "ninja",
+          "frame": "24"
+        }
+      ]
+    },
+    {
+      "key": "ninjaJumpingAttack",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "25"
+        },
+        {
+          "key": "ninja",
+          "frame": "26"
+        },
+        {
+          "key": "ninja",
+          "frame": "27"
+        }
+      ]
+    },
+    {
+      "key": "ninjaFallingAttack",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "28"
+        },
+        {
+          "key": "ninja",
+          "frame": "29"
+        },
+        {
+          "key": "ninja",
+          "frame": "30"
+        }
+      ]
+    },
+    {
+      "key": "ninjaVictoryPose",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "31"
+        },
+        {
+          "key": "ninja",
+          "frame": "32"
+        },
+        {
+          "key": "ninja",
+          "frame": "33"
+        }
+      ]
+    },
+    {
+      "key": "ninjaDefeated",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 8,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "34"
+        },
+        {
+          "key": "ninja",
+          "frame": "35"
+        },
+        {
+          "key": "ninja",
+          "frame": "36"
+        },
+        {
+          "key": "ninja",
+          "frame": "37"
+        }
+      ]
+    },
+    {
+      "key": "ninjaThrow",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "38"
+        },
+        {
+          "key": "ninja",
+          "frame": "39"
+        },
+        {
+          "key": "ninja",
+          "frame": "40"
+        }
+      ]
+    },
+    {
+      "key": "ninjaThrowFalling",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "41"
+        },
+        {
+          "key": "ninja",
+          "frame": "42"
+        },
+        {
+          "key": "ninja",
+          "frame": "43"
+        }
+      ]
+    },
+    {
+      "key": "ninjaThrowJumping",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 10,
+      "frames": [
+        {
+          "key": "ninja",
+          "frame": "44"
+        },
+        {
+          "key": "ninja",
+          "frame": "45"
+        },
+        {
+          "key": "ninja",
+          "frame": "46"
+        }
+      ]
+    }
+  ]
+}
