@@ -23,7 +23,7 @@ Porque me encantan lo videojuegos y siempre tuve la curiosidad de intentar hacer
 
 ## Probar el videojuego online
 
-Clash of Fists se encuentra disponible en **chi.io** con el siguiente enlace
+Clash of Fists se encuentra disponible en **itch.io** con el siguiente enlace
 
 - https://martinfondovila.itch.io/clash-of-fists
 
