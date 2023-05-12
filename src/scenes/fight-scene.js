@@ -1,8 +1,9 @@
-import { Knight } from "../classes/fighters/knight.js";
-import { PlayerContainer } from "../classes/player-container/player-container.js";
 import { MatchTimer } from "../classes/timer/match-timer.js";
 import { PreTimer } from "../classes/timer/pre-timer.js";
+import { FighterNameVersus } from "../classes/fighter-name-versus.js";
 import BaseScene from "./base-scene.js";
+import DynamicFighter from "../classes/fighters/dinamic-fighter.js";
+import { HealthBar } from "../classes/health-bar/health-bar.js";
 
 // PASAR LAS PARTES DEL create() a funciones separadas
 class FightScene extends BaseScene {
@@ -17,8 +18,17 @@ class FightScene extends BaseScene {
   }
 
   init(fightConf) {
-    console.log(fightConf);
     this.fightConf = fightConf;
+    this.cameras.main.fadeIn(100);
+    const fxCamera = this.cameras.main.postFX.addPixelate(40);
+    this.add.tween({
+      targets: fxCamera,
+      duration: 700,
+      amount: -1,
+      onComplete: () => {
+        this.cameras.main.postFX.remove(fxCamera);
+      },
+    });
   }
 
   preload() {}
@@ -29,64 +39,79 @@ class FightScene extends BaseScene {
     //this.createColliders();
     this.createSceneControls();
 
-    // this.player1Container = new PlayerContainer(
-    //   this,
-    //   100,
-    //   100,
-    //   [this.prueba, this.fistPrueba],
-    //   this.player1.controls
-    // );
+    this.events.on(this.sceneEvents.WAKE, (event, data) => {
+      this.scene.restart(data);
+    });
 
-    // this.add.existing(this.player1Container);
+    this.events.on(this.sceneEvents.RESUME, () => {
+      this.physics.resume();
+    });
 
-    // Jugador 1
-    // GET BOUNDS PARA COLLIDEAR CON ALGUN LADO ESPECIFICO DEL SPRITE
+    //PreTimer
+    this.player1.disableControls();
+    this.player2.disableControls();
+    this.preTimer = new PreTimer(
+      this,
+      this.conf.gameWidth / 2,
+      this.conf.gameHeight / 2,
+      3,
+      { fontSize: 100, stroke: 0x000000, strokeThickness: 4 },
+      this.endOfPretimer,
+      this
+    );
+    this.preTimer.setOrigin(0.5, 1);
+    this.preTimer.startTimer();
 
-    // Se agrega a las fisicas en lugar de la escena para que tenga body directamente
-
-    // // Jugador 2
-    // this.player2 = new Knight(this, 200, 100, Player2Controls);
-    // this.player2.body.setGravityY(800);
-    // this.player2.setCollideWorldBounds(true);
-
-    // //PreTimer
-    // this.player1.disableControls();
-    // this.player2.disableControls();
-    // this.preTimer = new PreTimer(
-    //   this,
-    //   300,
-    //   100,
-    //   3,
-    //   { fontSize: 100 },
-    //   this.endOfPretimer,
-    //   this
-    // );
-    // this.preTimer.startTimer();
-
-    // // Timer
-    // this.matchTimer = new MatchTimer(
-    //   this,
-    //   320,
-    //   40,
-    //   30,
-    //   { fontSize: 60 },
-    //   this.endMatch,
-    //   this
-    // );
+    // Timer
+    this.matchTimer = new MatchTimer(
+      this,
+      this.conf.gameWidth / 2,
+      10,
+      20,
+      { fontSize: 60, stroke: 0x000000, strokeThickness: 4 },
+      this.endMatchTimer,
+      this
+    ).setOrigin(0.5, 0);
+    this.matchTimer.hideTimer();
 
     //Colisiones;
-    this.physics.add.collider(
-      [this.player1Container, this.player1, this.player2],
-      this.mapFloor
+    this.physics.add.collider([this.player1, this.player2], this.floor);
+    this.physics.add.overlap(
+      this.player1.fist,
+      this.player2,
+      () => {
+        this.player2.enemyHit = this.player1.fist;
+        if (this.player2.isDefeated() || this.player1.isDefeated()) {
+          this.endMatch();
+        }
+      },
+      () => {
+        return this.player1.fist.attacking && !this.player2.isImmune();
+      },
+      this
+    );
+    this.physics.add.overlap(
+      this.player2.fist,
+      this.player1,
+      () => {
+        this.player1.enemyHit = this.player2.fist;
+        if (this.player2.isDefeated() || this.player1.isDefeated()) {
+          this.endMatch();
+        }
+      },
+      () => {
+        return this.player2.fist.attacking && !this.player1.isImmune();
+      },
+      this
     );
   }
 
   update(time, deltaTime) {
     this.player1.update(deltaTime);
     this.player2.update(deltaTime);
-    // Pausar y pasar a escena de pause y resumir desde ahi
+
     if (Phaser.Input.Keyboard.JustDown(this.controls.pause)) {
-      //this.handlePause();
+      this.handlePause();
     }
   }
 
@@ -94,40 +119,58 @@ class FightScene extends BaseScene {
     this.map = this.add.sprite(0, 0, this.fightConf.mapKey).setOrigin(0, 0);
     this.map.anims.play(this.fightConf.mapKey + "Idle");
 
-    console.log(this.conf.gameWidth);
     // Ver si hay forma de hacerlo con un static group
 
-    // this.mapFloor = this.physics.add
-    //   .staticGroup()
-    //   .scaleXY(this.conf.gameWidth, 18);
-
-    // this.mapFloor
-    //   .create(0, this.conf.gameHeight, null, null, false)
-    //   .setOrigin(0, 1);
-
-    // this.mapFloor.refresh();
-
-    // this.wall_floor = this.physics.add.staticGroup();
-
-    // this.wall_floor.create(0, 0, "wall").setOrigin(0);
-    // this.wall_floor
-    //   .create(this.scale.width, 0, "wall")
-    //   .setOrigin(1, 0)
-    //   .setFlipX(true);
-
-    // this.wall_floor.create(0, this.scale.height, "floor").setOrigin(0, 1);
-
-    // this.wall_floor.refresh();
-
-    // this.wall_floor.getChildren()[2].setOffset(0, 15);
+    this.floor = this.physics.add
+      .sprite(0, this.conf.gameHeight)
+      .setOrigin(0, 1);
+    this.floor.setImmovable(true);
+    this.floor.body.setAllowGravity(false);
+    this.floor.body.setSize(640, 18, false);
+    this.floor.body.setOffset(0, 20);
   }
 
   createPlayers() {
     let playersControls = this.createPlayersControls();
-    this.player1 = new Knight(this, 100, 100, playersControls[0], 900)
-      .setOrigin(0, 0)
-      .setScale(1.7);
-    this.player2 = new Knight(this, 300, 300, playersControls[1], 900);
+    this.player1 = new DynamicFighter(this.fightConf.p1, {
+      scene: this,
+      x: 70,
+      y: 100,
+      controls: playersControls[0],
+      gravityY: 900,
+      flipX: false,
+    });
+    this.player1.setScale(3);
+    this.player2 = new DynamicFighter(this.fightConf.p2, {
+      scene: this,
+      x: this.conf.gameWidth - 200,
+      y: 100,
+      controls: playersControls[1],
+      gravityY: 900,
+      flipX: false,
+    });
+    this.player2.setScale(3);
+    this.player2.setFlipX(true);
+
+    let p1HealthBar = new HealthBar(
+      this,
+      10,
+      10,
+      250,
+      40,
+      this.player1.healthPoints
+    );
+    this.player1.healthBar = p1HealthBar;
+
+    let p2HealthBar = new HealthBar(
+      this,
+      185,
+      10,
+      250,
+      40,
+      this.player1.healthPoints
+    );
+    this.player2.healthBar = p2HealthBar;
   }
 
   createPlayersControls() {
@@ -154,43 +197,114 @@ class FightScene extends BaseScene {
   }
 
   endOfPretimer() {
-    // this.preTimer.hideTimer();
-    // this.matchTimer.startTimer();
-    // this.player1.enableControls();
-    // this.player2.enableControls();
+    this.preTimer.hideTimer();
+    this.matchTimer.showTimer();
+    this.matchTimer.startTimer();
+    this.player1.enableControls();
+    this.player2.enableControls();
   }
 
   endMatch() {
-    // this.player1.disableControls();
-    // this.player2.disableControls();
-    // if (this.player1.healthPoints === this.player2.healthPoints) {
-    //   this.player1.stateMachine.setState("defeated");
-    //   this.player2.stateMachine.setState("defeated");
-    //   this.add.text(120, 190, "TIE!", { fontSize: 45 });
-    // } else if (this.player1.healthPoints > this.player2.healthPoints) {
-    //   this.player2.stateMachine.setState("defeated");
-    //   this.add.text(120, 190, "PLAYER 1 WON!", { fontSize: 45 });
-    // } else {
-    //   this.player1.stateMachine.setState("defeated");
-    //   this.add.text(120, 190, "PLAYER 2 WON!", { fontSize: 45 });
-    // }
+    this.controls.pause.enabled = false;
+    this.matchTimer.stopTimer();
+    this.player1.disableControls();
+    this.player2.disableControls();
+    if (this.player1.healthPoints == this.player2.healthPoints) {
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "TIE",
+        "fighterNameFrame",
+        80
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    } else if (this.player1.healthPoints > this.player2.healthPoints) {
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "PLAYER 1 WINS",
+        "fighterNameFrame",
+        60
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    } else {
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "PLAYER 2 WINS",
+        "fighterNameFrame",
+        60
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    }
+    this.time.delayedCall(1500, () => {
+      this.scene.moveAbove(this.keyName, "EndFightMenuScene");
+      this.scene.run("EndFightMenuScene");
+      this.scene.sleep();
+    });
+  }
+
+  endMatchTimer() {
+    this.controls.pause.enabled = false;
+    this.player1.disableControls();
+    this.player2.disableControls();
+    if (this.player1.healthPoints == this.player2.healthPoints) {
+      this.player1.stateMachine.setState("defeated");
+      this.player2.stateMachine.setState("defeated");
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "TIE",
+        "fighterNameFrame",
+        80
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    } else if (this.player1.healthPoints > this.player2.healthPoints) {
+      this.player2.stateMachine.setState("defeated");
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "PLAYER 1 WINS",
+        "fighterNameFrame",
+        60
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    } else {
+      this.player1.stateMachine.setState("defeated");
+      let tie = new FighterNameVersus(
+        this,
+        this.conf.gameWidth / 2,
+        this.conf.gameHeight / 2,
+        "PLAYER 2 WINS",
+        "fighterNameFrame",
+        60
+      );
+      tie.setX(this.conf.gameWidth / 2 - tie.fighterNameFrame.width / 2);
+      tie.setY(this.conf.gameHeight * 0.4 - tie.fighterNameFrame.height / 2);
+    }
+    this.time.delayedCall(1500, () => {
+      this.scene.moveAbove(this.keyName, "EndFightMenuScene");
+      this.scene.run("EndFightMenuScene");
+      this.scene.sleep();
+    });
   }
 
   handlePause() {
-    // REVISAR QUE SE STACKEAN LAS OPCIONES CUANDO VUELVO A LA ESCENA
-    //   this.physics.pause();
-    //   this.scene.pause();
-    //   if (!this.scene.isSleeping("PauseMenuScene")) {
-    //     console.log(!this.scene.isSleeping("PauseMenuScene"));
-    //     this.scene.launch("PauseMenuScene");
-    //   } else {
-    //     this.scene.wake("PauseMenuScene");
-    //   }
-    //   this.scene.moveAbove("FightScene", "PauseMenuScene");
-    // }
+    this.scene.moveAbove(this.keyName, "PauseMenuScene");
+    this.scene.run("PauseMenuScene");
+    this.physics.pause();
+    this.scene.pause();
   }
 }
 
 export default FightScene;
-
-// VER SI ES NECESARIO DELOAD LOS PRELOAD DE LAS OTRAS SCENES O QUEDAN PARA SIEMPRE

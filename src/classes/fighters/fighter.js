@@ -1,8 +1,8 @@
+import * as Phaser from "phaser";
 import { StateMachine } from "../state-machine/state-machine.js";
 
 export class Fighter extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, controls, texture, frame, healthPoints) {
-    // Condición para que la clase no se pueda instanciar ya que es abstracta
     if (new.target === Fighter) {
       throw new TypeError(
         "No se puede instanciar esta clase porque es abstracta."
@@ -10,12 +10,14 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     }
     super(scene, x, y, texture, frame);
 
-    // Agrega los controles con los que se va a manejar el luchador
     this.controls = controls;
+
+    this.enemyHit;
 
     this.scene.physics.add.existing(this);
     this.scene.add.existing(this);
     this.setCollideWorldBounds(true);
+    this.setOrigin(0, 0);
 
     this.healthPoints = healthPoints;
     this.stateMachine = new StateMachine(this);
@@ -23,8 +25,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     this.setAnimationsOnMap();
     this.immunity = false;
 
-    this.fist;
-    //this.positionFist()
+    this.weapons = [];
 
     this.stateMachine
       .addState("idle", {
@@ -59,6 +60,7 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       .addState("damaged", {
         onEnter: this.damagedOnEnter,
         onUpdate: this.damagedOnUpdate,
+        onExit: this.damagedOnExit,
       })
       .addState("defeated", {
         onEnter: this.defeatedOnEnter,
@@ -66,17 +68,17 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
       .setState("idle");
 
     // Revisar por que funciona :p
-    this.on(
-      "animationcomplete",
-      function (anim, frame) {
-        this.emit("animationcomplete_" + anim.key, anim, frame);
-      },
-      this
-    );
+    // this.on(
+    //   "animationcomplete",
+    //   function (anim, frame) {
+    //     this.emit("animationcomplete_" + anim.key, anim, frame);
+    //   },
+    //   this
+    // );
 
-    this.on("animationcomplete_" + this.animationsMap.get("attacking"), () => {
-      this.stateMachine.setState("idle");
-    });
+    // this.on("animationcomplete_" + this.animationsMap.get("attacking"), () => {
+    //   this.stateMachine.setState("idle");
+    // });
 
     // this.on("animationstart_" + this.animationsMap.get("attack"), () => {
     //   this.attackHitbox.body.enable = true;
@@ -96,18 +98,22 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
 
     if (this.controls.left.isDown || this.controls.right.isDown) {
       this.stateMachine.setState("walking");
-      //this.fist.stateMachine.setState("walking");
     }
 
     if (
       Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
-      !this.isImmune()
+      !this.isImmune() &&
+      this.fist.canAttack()
     ) {
       this.stateMachine.setState("attacking");
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.controls.jump)) {
       this.stateMachine.setState("jumping");
+    }
+
+    if (this.enemyHit) {
+      this.setState("damaged");
     }
   }
 
@@ -141,7 +147,9 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   jumpingOnEnter() {
-    this.setVelocityY(-500);
+    if (!this.isJumping()) {
+      this.setVelocityY(-500);
+    }
     this.anims.play(this.animationsMap.get("jumping"));
   }
 
@@ -149,16 +157,17 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   jumpingOnUpdate() {
     if (
       Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
-      !this.isImmune()
+      !this.isImmune() &&
+      this.fist.canAttack()
     ) {
       this.stateMachine.setState("attackingMidAir");
     } else if (this.isFalling()) {
       this.stateMachine.setState("falling");
     } else if (this.body.blocked.down) {
       this.stateMachine.setState("idle");
-    } else if (this.controls.left.isDown) {
+    } else if (this.controls.left.isDown && !this.fist.attacking) {
       this.walkLeft();
-    } else if (this.controls.right.isDown) {
+    } else if (this.controls.right.isDown && !this.fist.attacking) {
       this.walkRight();
     }
   }
@@ -171,21 +180,37 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   fallingOnUpdate() {
     if (
       Phaser.Input.Keyboard.JustDown(this.controls.attack) &&
-      !this.isImmune()
+      !this.isImmune() &&
+      this.fist.canAttack()
     ) {
       this.stateMachine.setState("attackingMidAir");
     } else if (this.body.blocked.down) {
       this.stateMachine.setState("idle");
-    } else if (this.controls.left.isDown) {
+    } else if (this.controls.left.isDown && !this.fist.attacking) {
       this.walkLeft();
-    } else if (this.controls.right.isDown) {
+    } else if (this.controls.right.isDown && !this.fist.attacking) {
       this.walkRight();
     }
+
+    if (this.enemyHit) {
+      this.setState("damaged");
+    }
+  }
+
+  setScale(scale) {
+    super.setScale(scale);
+    return this;
+  }
+
+  setState(state) {
+    this.stateMachine.setState(state);
   }
 
   // REHACER
   attackingOnEnter() {
     this.anims.play(this.animationsMap.get("attacking"));
+    this.setVelocityX(0);
+    this.fist.setState("attacking");
   }
 
   // REHACER
@@ -198,33 +223,49 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   clashOnUpdate() {}
 
   // HACER
-  attackingMidAirOnEnter() {}
-
-  // HACER
-  attackingMidAirOnUpdate() {}
+  attackingMidAirOnEnter() {
+    if (this.isFalling()) {
+      this.anims.play(this.animationsMap.get("attackingFalling"));
+    } else {
+      this.anims.play(this.animationsMap.get("attackingJumping"));
+    }
+    this.fist.setState("attacking");
+  }
 
   // Efecto rebote
-  damagedOnEnter(sourceOfDamage) {
-    console.log(sourceOfDamage);
-    if (this.canRecieveFullDamage(sourceOfDamage)) {
-      this.recieveDamage();
+  damagedOnEnter() {
+    this.anims.play(this.animationsMap.get("damaged"));
+    if (this.canRecieveFullDamage(this.enemyHit.baseDamage)) {
+      this.recieveDamage(this.enemyHit.baseDamage);
       this.becomeImmune(1000, 0xff0000);
     } else {
-      this.recieveDamage(sourceOfDamage);
+      this.recieveDamage(this.enemyHit.baseDamage);
     }
+    this.bounceOff();
   }
 
   // Por aca o en el OnEnter va a tener que estar el efector rebote
   damagedOnUpdate() {
     if (this.isDefeated()) {
       this.stateMachine.setState("defeated");
+    } else if (this.isFalling()) {
+      this.stateMachine.setState("falling");
+    } else if (this.isJumping()) {
+      this.stateMachine.setState("jumping");
     } else {
       this.stateMachine.setState("idle");
     }
   }
 
+  damagedOnExit() {
+    this.enemyHit = null;
+  }
+
   defeatedOnEnter() {
     this.anims.play(this.animationsMap.get("defeated"));
+    this.immunity = true;
+    this.setVelocityX(0);
+    //this.body.enable = false;
   }
 
   // Metodo abstracto que deben implementar las subclases
@@ -233,8 +274,8 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   // REACOMODAR LAS BARRAS DE VIDA - PUEDE SER CON EL VIDEO DE YOUTUBE QUE ESTA GUARDADO EN VER MAS TARDE
   recieveDamage(damagePoints) {
     if (!this.isImmune()) {
-      console.log("daño: " + damagePoints);
       this.healthPoints = this.healthPoints - damagePoints;
+      this.healthBar.decrease(damagePoints);
     }
   }
 
@@ -252,7 +293,9 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   enableControls() {
-    Object.values(this.controls).forEach((control) => (control.enabled = true));
+    Object.values(this.controls).forEach((control) => {
+      control.reset().enabled = true;
+    });
   }
 
   isDefeated() {
@@ -281,7 +324,6 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
           clearInterval(interval2);
           this.clearTint();
           this.immunity = false;
-          console.log("Termino la inmunidad");
         },
         [],
         this.scene
@@ -290,17 +332,36 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
   }
 
   walkLeft() {
-    this.setFlip(true);
-    this.setVelocityX(-160);
+    if (!this.flipX) this.setFlipX(true);
+    this.setVelocityX(-250);
   }
 
   walkRight() {
-    this.setFlip(false);
-    this.setVelocityX(160);
+    if (this.flipX) this.setFlipX(false);
+    this.setVelocityX(250);
+  }
+
+  bounceOff() {
+    if (this.flipX) {
+      this.setVelocityX(200);
+      this.setVelocityY(-200);
+    } else {
+      this.setVelocityX(-200);
+      this.setVelocityY(-200);
+    }
+
+    setTimeout(() => {
+      this.setVelocityX(0);
+      this.setVelocityY(0);
+    }, 500);
   }
 
   isFalling() {
-    return this.body.velocity.y > 0;
+    return this.body.velocity.y > 0 && !this.body.blocked.down;
+  }
+
+  isJumping() {
+    return this.body.velocity.y < 0 && !this.body.blocked.down;
   }
 
   // Getters y setters
@@ -312,8 +373,16 @@ export class Fighter extends Phaser.Physics.Arcade.Sprite {
     this.healthPoints = points;
   }
 
-  update(deltaTime) {
-    this.stateMachine.update(deltaTime);
-    //this.fist.update(deltaTime);
+  setScale(scale) {
+    super.setScale(scale);
+    this.fist.setScale(scale - 1);
+    this.fist.setXOffset(this.fist.xOffset * scale - 1);
+    this.fist.setYOffset(this.fist.yOffset * scale - 1);
+  }
+
+  setFlipX(flip) {
+    super.setFlipX(flip);
+    this.fist.setFlipX(flip);
+    this.fist.flipXOffset();
   }
 }

@@ -1,147 +1,129 @@
-import BaseMenuScene from "./base-menu-scene";
-import { MenuOption } from "../classes/menu-option.js";
+import BaseMenuScene from "./base-menu-scene.js";
+import { MenuSwitchOption } from "../classes/menu-switch-option.js";
 import { VolumeControl } from "../classes/volume-controls.js";
-import { MUSIC_VOLUME } from "../classes/music-volume-state.js";
-import { SFX_VOLUME } from "../classes/sfx-volume-state.js";
+import { VOLUME_CONTROL_OPTIONS } from "../utils.js";
+import NextOptionSimpleArrayStrategy from "../classes/next-option-simple-array-strategy.js";
 
 class OptionsScene extends BaseMenuScene {
   constructor() {
     super("OptionsScene");
-    this.options;
-    this.selectedOption;
+    this.nextOptionStrategy = new NextOptionSimpleArrayStrategy();
+    this.volumes = [];
+  }
+
+  init(data) {
+    this.sceneToReturn = data.sceneKey;
   }
 
   create() {
-    super.createVolumeUpdaters();
-    this.createAudios();
-    this.createOptions();
+    this.createBackground();
+    this.createSounds();
+    this.createVolumeUpdaters();
     this.createControls();
+    this.createOptions();
     this.setDefaultOption();
+
+    this.events.on(this.sceneEvents.WAKE, (event, data) => {
+      this.sceneToReturn = data.sceneKey;
+      this.backOption.sceneToSwitch = this.sceneToReturn;
+    });
+
+    this.events.on(this.sceneEvents.SLEEP, () => {
+      this.setDefaultOption();
+    });
   }
 
-  // ARREGLAR EL TEMA OPCIONES JERARQUIA / HERENCIA
   update() {
     if (this.inputKeyboard.JustDown(this.controls.moveUp)) {
-      this.handleChangeOptionUp();
+      this.setSelectedOption(
+        this.nextOptionStrategy.getNextOption(
+          "UP",
+          this.options,
+          this.selectedOption
+        )
+      );
+      this.changeOptionSound.play();
     } else if (this.inputKeyboard.JustDown(this.controls.moveDown)) {
-      this.handleChangeOptionDown();
+      this.setSelectedOption(
+        this.nextOptionStrategy.getNextOption(
+          "DOWN",
+          this.options,
+          this.selectedOption
+        )
+      );
+      this.changeOptionSound.play();
     } else if (this.inputKeyboard.JustDown(this.controls.select)) {
       this.handleSelectOnOption();
     } else if (this.inputKeyboard.JustDown(this.controls.back)) {
       this.handleBack();
     }
 
-    this.volumeControl1.update();
-    this.volumeControl2.update();
+    this.volumes.forEach((volumeControl) => {
+      volumeControl.update();
+    });
   }
 
-  isOutOfBounds(index) {
-    return this.options.length - 1 < index || index < 0;
-  }
-
-  setSelectedOption(option) {
-    if (this.selectedOption) {
-      this.selectedOption.clearTint();
-      this.selectedOption.isSelected = false;
-    }
-    this.selectedOption = option;
-    this.selectedOption.isSelected = true;
-    this.selectedOption.setTint(0xffff00);
-  }
-
-  setDefaultOption() {
-    this.setSelectedOption(this.options[0]);
-  }
-
+  // Cambiar
   handleBack() {
     this.selectSound.play();
     this.options[this.options.length - 1].handleSelect();
-  }
-
-  handleChangeOptionDown() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.options.indexOf(this.selectedOption) + 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.setSelectedOption(this.options[0]);
-    } else {
-      this.setSelectedOption(this.options[nextOptionIndex]);
-    }
-    this.selectedOption.setTint(0xffff00);
-    this.changeOptionSound.play();
-  }
-
-  handleChangeOptionUp() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.options.indexOf(this.selectedOption) - 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.setSelectedOption(this.options[this.options.length - 1]);
-    } else {
-      this.setSelectedOption(this.options[nextOptionIndex]);
-    }
-    this.selectedOption.setTint(0xffff00);
-    this.changeOptionSound.play();
-  }
-
-  handleSelectOnOption() {
-    this.selectSound.play();
-    this.selectedOption.handleSelect();
+    this.setDefaultOption();
   }
 
   createOptions() {
     let lastYPosition = this.conf.gameHeight * 0.2;
 
-    this.volumeControl1 = new VolumeControl(
+    VOLUME_CONTROL_OPTIONS.forEach((conf) => {
+      let volumeControl = new VolumeControl(
+        this,
+        0,
+        lastYPosition,
+        conf.volumeText,
+        conf.volumeState,
+        conf.selectedTint,
+        this.selectSound,
+        this.volumeControls,
+        this.optionBlockedSound
+      );
+      let volumeBounds = volumeControl.getBounds();
+      volumeControl.x = this.conf.gameWidth / 2 - volumeBounds.width / 2;
+      lastYPosition += volumeBounds.height + 10;
+      this.options.push(volumeControl);
+      this.volumes.push(volumeControl);
+    });
+
+    this.backOption = new MenuSwitchOption(
       this,
-      0,
+      this.conf.gameWidth / 2,
       lastYPosition,
-      "MUSIC VOLUME",
-      MUSIC_VOLUME,
-      this.selectSound,
-      this.blockSound
-    );
-    this.volumeControl1.x =
-      this.conf.gameWidth / 2 - this.volumeControl1.getBounds().width / 2;
-
-    let volume1Height = this.volumeControl1.getBounds().height;
-    lastYPosition += volume1Height;
-
-    this.volumeControl2 = new VolumeControl(
-      this,
-      0,
-      lastYPosition + 10,
-      "SFX VOLUME",
-      SFX_VOLUME,
-      this.selectSound,
-      this.blockSound
-    );
-    this.volumeControl2.x =
-      this.conf.gameWidth / 2 - this.volumeControl2.getBounds().width / 2;
-
-    let volume2Height = this.volumeControl2.getBounds().height;
-    lastYPosition += volume2Height;
-
-    this.backOption = new MenuOption(
-      this,
-      0,
-      lastYPosition + 20,
       "BACK",
-      "MainMenuScene",
-      { fontSize: 40 }
+      this.sceneToReturn,
+      0xffff00,
+      this.selectSound,
+      { fontSize: 49 }
     );
-    this.backOption.x =
-      this.conf.gameWidth / 2 - this.backOption.displayWidth / 2;
-    this.options = [this.volumeControl1, this.volumeControl2, this.backOption];
+    this.backOption.setOrigin(0.5, 0);
+
+    this.options.push(this.backOption);
   }
 
-  createAudios() {
+  createControls() {
+    super.createControls();
+    this.volumeControls = this.input.keyboard.addKeys({
+      reduce: this.keyCodes.LEFT,
+      increase: this.keyCodes.RIGHT,
+    });
+  }
+
+  createSounds() {
     this.changeOptionSound = this.sound.add("changeOption");
     this.selectSound = this.sound.add("select");
-    this.blockSound = this.sound.add("block");
+    this.optionBlockedSound = this.sound.add("optionBlocked");
 
     this.sfxSounds = [
       this.changeOptionSound,
       this.selectSound,
-      this.blockSound,
+      this.optionBlockedSound,
     ];
   }
 }

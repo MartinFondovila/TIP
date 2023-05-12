@@ -1,3 +1,5 @@
+import * as Phaser from "phaser";
+
 export class PreTimer extends Phaser.GameObjects.Text {
   constructor(scene, x, y, time, styles, timeOver, contextOfTimeOver) {
     super(scene, x, y, time, styles);
@@ -16,7 +18,7 @@ export class PreTimer extends Phaser.GameObjects.Text {
     this.timeLeft -= 1;
     this.setText(this.timeLeft);
     if (this.runOutOfTime()) {
-      this.setText("Fight!");
+      this.setText("FIGHT");
       this.scene.time.delayedCall(
         1000,
         this.timeOver,

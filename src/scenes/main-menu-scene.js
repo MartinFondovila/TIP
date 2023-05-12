@@ -1,57 +1,49 @@
 import BaseMenuScene from "./base-menu-scene.js";
-import { MENU_OPTIONS } from "../utils.js";
-import { MenuOption } from "../classes/menu-option.js";
-// TAREA ACOMODAR MENUS
+import { MAIN_MENU_OPTIONS } from "../utils.js";
+import { MenuSwitchOption } from "../classes/menu-switch-option.js";
+import NextOptionSimpleArrayStrategy from "../classes/next-option-simple-array-strategy.js";
+import ShakePosition from "phaser3-rex-plugins/plugins/shakeposition.js";
+
 class MainMenuScene extends BaseMenuScene {
   constructor() {
-    super("MainMenuScene", false, false);
+    super("MainMenuScene");
     this.selectedOption;
     this.fists = [];
+    // De esto se puede hacer un singleton
+    this.nextOptionStrategy = new NextOptionSimpleArrayStrategy();
   }
 
   create() {
-    console.log("created");
+    this.createBackground();
+    this.createSounds();
+    this.createVolumeUpdaters();
     this.createControls();
     this.disableControls();
-    this.createBackground();
     this.createFists();
     this.createLogo();
+    this.createParticles();
     this.createTweens();
     this.createOptions();
     this.setDefaultOption();
-    this.createAudios();
-    this.createVolumeUpdaters();
-    this.cameras.main
-      .fadeIn(2000, 255, 255, 255)
-      .on(this.camerasEvents.FADE_IN_COMPLETE, this.enableControls, this);
-    this.cameras.main.shake(2000, 0.01);
-  }
+    this.introEffect();
 
-  update() {
-    if (this.inputKeyboard.JustDown(this.controls.moveUp)) {
-      this.handleChangeOptionUp();
-    } else if (this.inputKeyboard.JustDown(this.controls.moveDown)) {
-      this.handleChangeOptionDown();
-    } else if (this.inputKeyboard.JustDown(this.controls.select)) {
-      this.handleSelectOnOption();
-    }
-  }
-
-  createOptions() {
-    let lastOptionPositionY = 0;
-
-    MENU_OPTIONS.forEach((option) => {
-      this.options.push(
-        new MenuOption(
-          this,
-          this.conf.gameWidth / 2,
-          this.conf.gameHeight * 0.65 + lastOptionPositionY,
-          option.text,
-          option.scene,
-          { fontSize: 40 }
-        ).setOrigin(0.5, 1)
-      );
-      lastOptionPositionY += 50;
+    this.logo.on(
+      "animationcomplete",
+      function (anim, frame) {
+        this.emit("animationcomplete_" + anim.key, anim, frame);
+      },
+      this.logo
+    );
+    this.logo.once(
+      "animationcomplete_" + "logoCracking",
+      function () {
+        this.enableControls();
+        this.emmiter.stop();
+      },
+      this
+    );
+    this.events.once(this.sceneEvents.SLEEP, () => {
+      this.emmiter.killAll();
     });
   }
 
@@ -59,8 +51,10 @@ class MainMenuScene extends BaseMenuScene {
     this.fists.push(
       this.add
         .sprite(
-          this.conf.gameWidth * 0.5 - this.conf.fistDimensions.width * 4,
-          this.conf.gameHeight * 0.4,
+          this.conf.gameWidth * 0.5 -
+            this.conf.fistDimensions.sprite.width * 4 -
+            4,
+          this.conf.gameHeight * 0.45,
           "knightFist"
         )
         .setScale(4)
@@ -69,8 +63,10 @@ class MainMenuScene extends BaseMenuScene {
     this.fists.push(
       this.add
         .sprite(
-          this.conf.gameWidth * 0.5 + this.conf.fistDimensions.width * 4,
-          this.conf.gameHeight * 0.4,
+          this.conf.gameWidth * 0.5 +
+            this.conf.fistDimensions.sprite.width * 4 +
+            4,
+          this.conf.gameHeight * 0.45,
           "ninjaFist"
         )
         .setScale(4)
@@ -81,8 +77,31 @@ class MainMenuScene extends BaseMenuScene {
 
   createLogo() {
     this.logo = this.add
-      .image(this.conf.gameWidth * 0.5, 0, "clashOfFistsLogo")
-      .setOrigin(0.5, 1);
+      .sprite(this.conf.gameWidth * 0.5, 140, "clashOfFistsLogo", 0)
+      .setOrigin(0.5, 1)
+      .setAlpha(0)
+      .setScale(1.5)
+      .setDepth(20);
+  }
+
+  createParticles() {
+    const deathZone = new Phaser.Geom.Rectangle(
+      0,
+      this.conf.gameHeight - 10,
+      this.conf.gameWidth,
+      10
+    );
+
+    this.emmiter = this.add
+      .particles(0, 120, "purpleParticle", {
+        x: { min: 80, max: 560 },
+        quantity: 2,
+        lifespan: 4000,
+        scale: { start: 1.2, end: 0.1 },
+        gravityY: 800,
+        deathZone: deathZone,
+      })
+      .stop();
   }
 
   createTweens() {
@@ -101,67 +120,89 @@ class MainMenuScene extends BaseMenuScene {
   }
 
   createLogoTween() {
+    this.shakeLogo = new ShakePosition(this.logo, {
+      duration: 500,
+      axis: 1,
+      magnitudeMode: 1,
+      magnitude: 10,
+    });
     this.tweens.add({
       targets: [this.logo],
-      y: 100,
+      alpha: 1,
       duration: 2000,
+      onComplete: () => {
+        this.shakeLogo.shake();
+        this.logo.play("logoCracking");
+        this.logoCrackingSound.play();
+        this.emmiter.start();
+      },
+      onCompleteScope: this,
     });
   }
 
-  createBackground() {
-    //this.add.image(0, 0, "menuBackgroundBroken").setOrigin(0, 0);
+  createOptions() {
+    let lastOptionPositionY = 0;
+
+    MAIN_MENU_OPTIONS.forEach((option) => {
+      this.options.push(
+        new MenuSwitchOption(
+          this,
+          this.conf.gameWidth / 2,
+          this.conf.gameHeight * 0.67 + lastOptionPositionY,
+          option.text,
+          option.scene,
+          option.selectedTint,
+          this.selectSound,
+          option.styles,
+          { sceneKey: this.keyName }
+        )
+          .setOrigin(0.5, 1)
+          .setDepth(15)
+      );
+      lastOptionPositionY += 50;
+    });
   }
 
-  createAudios() {
+  createSounds() {
     this.changeOptionSound = this.sound.add("changeOption");
     this.selectSound = this.sound.add("select");
+    this.logoCrackingSound = this.sound.add("logoCracking");
 
-    this.sfxSounds = [this.changeOptionSound, this.selectSound];
+    this.sfxSounds = [
+      this.changeOptionSound,
+      this.selectSound,
+      this.logoCrackingSound,
+    ];
   }
 
-  setSelectedOption(option) {
-    if (this.selectedOption) {
-      this.selectedOption.clearTint();
+  introEffect() {
+    this.cameras.main.fadeIn(2000, 255, 255, 255);
+    //.on(this.camerasEvents.FADE_IN_COMPLETE, this.enableControls, this);
+    this.cameras.main.shake(2000, 0.01);
+  }
+
+  update() {
+    if (this.inputKeyboard.JustDown(this.controls.moveUp)) {
+      this.setSelectedOption(
+        this.nextOptionStrategy.getNextOption(
+          "UP",
+          this.options,
+          this.selectedOption
+        )
+      );
+      this.changeOptionSound.play();
+    } else if (this.inputKeyboard.JustDown(this.controls.moveDown)) {
+      this.setSelectedOption(
+        this.nextOptionStrategy.getNextOption(
+          "DOWN",
+          this.options,
+          this.selectedOption
+        )
+      );
+      this.changeOptionSound.play();
+    } else if (this.inputKeyboard.JustDown(this.controls.select)) {
+      this.handleSelectOnOption();
     }
-    this.selectedOption = option;
-    this.selectedOption.setTint(0xffff00);
-  }
-
-  setDefaultOption() {
-    this.setSelectedOption(this.options[0]);
-  }
-
-  handleChangeOptionDown() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.options.indexOf(this.selectedOption) + 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.selectedOption = this.options[0];
-    } else {
-      this.selectedOption = this.options[nextOptionIndex];
-    }
-    this.selectedOption.setTint(0xffff00);
-    this.changeOptionSound.play();
-  }
-
-  handleChangeOptionUp() {
-    this.selectedOption.clearTint();
-    let nextOptionIndex = this.options.indexOf(this.selectedOption) - 1;
-    if (this.isOutOfBounds(nextOptionIndex)) {
-      this.selectedOption = this.options[this.options.length - 1];
-    } else {
-      this.selectedOption = this.options[nextOptionIndex];
-    }
-    this.selectedOption.setTint(0xffff00);
-    this.changeOptionSound.play();
-  }
-
-  handleSelectOnOption() {
-    this.selectSound.play();
-    this.selectedOption.handleSelect();
-  }
-
-  isOutOfBounds(index) {
-    return this.options.length - 1 < index || index < 0;
   }
 }
 

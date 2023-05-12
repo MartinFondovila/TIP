@@ -1,24 +1,32 @@
 import BaseMenuScene from "./base-menu-scene.js";
 import { SECRET_COMBO } from "../utils.js";
+import { MenuSwitchOption } from "../classes/menu-switch-option.js";
+import NextOptionSimpleArrayStrategy from "../classes/next-option-simple-array-strategy.js";
+import ShakePosition from "phaser3-rex-plugins/plugins/shakeposition.js";
 
 // PROBLEMAS A RESOLVER, CUANDO SE HACE ENABLED VARIAS VECES, SIEMPRE HAY UNA TECLA QUE SE TIENE QUE APRETAR DOS VECES PARA QUE FUNCIONE
 // NO SE COMO REINICIAR LOS TWEEN CUANDO SE SALE DURANTE SU EJECUCION
 class CreditsScene extends BaseMenuScene {
   constructor() {
-    super("CreditsScene", false, false);
+    super("CreditsScene");
     this.comboKeys = SECRET_COMBO.map((combo) => combo.key);
     this.arrowsSprites = [];
     this.currentComboProgress = 0;
     this.arrowsAlpha = 0.1;
+    this.comboRate = 1;
     this.clearArrowsTimeout;
+    this.nextOptionStrategy = new NextOptionSimpleArrayStrategy();
   }
 
   create() {
+    this.createBackground();
+    this.createSounds();
+    this.createVolumeUpdaters();
     this.createControls();
     this.createCredits();
-    this.createBackOption();
+    this.createOptions();
+    this.setDefaultOption();
     this.createSecret();
-    this.createAudios();
     this.createSecretTweens();
     this.createSecretArrows();
     this.createListeners();
@@ -39,9 +47,8 @@ class CreditsScene extends BaseMenuScene {
       this.inputKeyboard.JustDown(this.controls.back) ||
       this.inputKeyboard.JustDown(this.controls.select)
     ) {
-      this.selectSound.play();
+      this.handleSelectOnOption();
       this.resetDefault();
-      this.switchScene("MainMenuScene");
     }
   }
 
@@ -84,25 +91,37 @@ class CreditsScene extends BaseMenuScene {
     });
   }
 
-  createAudios() {
+  createSounds() {
     this.disappearSound = this.sound.add("disappear");
     this.selectSound = this.sound.add("select");
+    this.comboHitSound = this.sound.add("comboHit");
+    this.comboMissSound = this.sound.add("comboMiss");
+
+    this.sfxSounds = [
+      this.disappearSound,
+      this.selectSound,
+      this.comboHitSound,
+      this.comboMissSound,
+    ];
   }
 
   createSecretTweens() {
-    this.secretTweenOut = this.tweens.create({
+    this.secretTweenOut = this.tweens.add({
       targets: [this.carapan],
+      paused: true,
       alpha: 0,
       duration: 1000,
       onComplete: () => {
         this.resetArrowsAlpha();
         this.enableArrows();
+        this.createSecretTweens();
       },
     });
 
-    this.secretTweenIn = this.tweens.create({
+    this.secretTweenIn = this.tweens.add({
       targets: [this.carapan],
-      onActive: () => {
+      paused: true,
+      onStart: () => {
         this.disappearSound.play();
         this.carapan.anims.play("carapanIdle");
       },
@@ -114,19 +133,40 @@ class CreditsScene extends BaseMenuScene {
     });
   }
 
+  createOptions() {
+    let backOption = new MenuSwitchOption(
+      this,
+      this.conf.gameWidth - 55,
+      this.conf.gameHeight - 10,
+      "BACK",
+      "MainMenuScene",
+      0xffff00,
+      this.selectSound,
+      { fontSize: 40 }
+    );
+    backOption.setOrigin(1, 1);
+    this.options.push(backOption);
+  }
+
   // Ver como completar
   createSecretArrows() {
-    let lastXPosition = 10;
+    let lastXPosition = 60;
     SECRET_COMBO.forEach((combo) => {
       let newArrow = this.add
         .sprite(
           lastXPosition,
-          this.conf.gameHeight - 10,
+          this.conf.gameHeight - 15,
           combo.texture,
           combo.frame
         )
         .setOrigin(0, 1)
         .setAlpha(0.1);
+      newArrow.shaker = new ShakePosition(newArrow, {
+        duration: 500,
+        axis: 1,
+        magnitudeMode: 1,
+        magnitude: 10,
+      });
       newArrow.key = combo.key;
       this.arrowsSprites.push(newArrow);
       lastXPosition = lastXPosition + this.conf.arrowsDimensions.width + 10;
@@ -144,24 +184,44 @@ class CreditsScene extends BaseMenuScene {
       this.clearArrowsTimeout = setTimeout(() => {
         this.disableArrows();
         this.resetArrowsAlpha();
+        this.arrowsSprites
+          .filter((arrow, index) => {
+            return index < this.currentComboProgress;
+          })
+          .forEach((arrow) => {
+            arrow.shaker.shake();
+          });
         this.currentComboProgress = 0;
         this.clearArrowsTimeout = null;
-        console.log("timeout");
         this.enableArrows();
+        this.comboMissSound.play();
+        this.comboRate = 1;
       }, 1000);
+      this.comboHitSound.play({ rate: this.comboRate });
+      this.comboRate += 0.3;
     } else {
       if (this.clearArrowsTimeout) {
         clearTimeout(this.clearArrowsTimeout);
         this.clearArrowsTimeout = null;
       }
       this.resetArrowsAlpha();
+      this.arrowsSprites
+        .filter((arrow, index) => {
+          return index < this.currentComboProgress;
+        })
+        .forEach((arrow) => {
+          arrow.shaker.shake();
+        });
       this.currentComboProgress = 0;
+      this.comboMissSound.play();
+      this.comboRate = 1;
     }
     if (this.isTheLastComboKey()) {
       this.disableArrows();
       clearTimeout(this.clearArrowsTimeout);
       this.currentComboProgress = 0;
       this.secretTweenIn.play();
+      this.comboRate = 1;
     }
   }
 
@@ -182,10 +242,10 @@ class CreditsScene extends BaseMenuScene {
   }
 
   enableArrows() {
-    this.controls.moveLeft.enabled = true;
-    this.controls.moveRight.enabled = true;
-    this.controls.moveUp.enabled = true;
-    this.controls.moveDown.enabled = true;
+    this.controls.moveLeft.reset().enabled = true;
+    this.controls.moveRight.reset().enabled = true;
+    this.controls.moveUp.reset().enabled = true;
+    this.controls.moveDown.reset().enabled = true;
   }
 
   resetArrowsAlpha() {
@@ -204,11 +264,14 @@ class CreditsScene extends BaseMenuScene {
     }
 
     if (this.secretTweenIn.isPlaying() || this.secretTweenOut.isPlaying()) {
-      this.secretTweenIn.remove();
-      this.secretTweenOut.remove();
+      this.secretTweenIn.stop();
+      this.secretTweenOut.stop();
       this.carapan.setAlpha(0);
       this.createSecretTweens();
+      this.enableArrows();
     }
+
+    this.comboRate = 1;
   }
 }
 

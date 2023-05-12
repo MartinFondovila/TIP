@@ -1,13 +1,15 @@
 import BootLoader from "./scenes/boot-loader.js";
-import CharacterSelectionScene from "./scenes/character-selection-scene.js";
+import FighterSelectionScene from "./scenes/fighter-selection-scene.js";
 import FightScene from "./scenes/fight-scene.js";
 import MainMenuScene from "./scenes/main-menu-scene.js";
 import PauseMenuScene from "./scenes/pause-menu-scene.js";
-import MapSelectionScene from "./scenes/map-selection-scene3.js";
+import MapSelectionScene from "./scenes/map-selection-scene.js";
 import CreditsScene from "./scenes/credits-scene.js";
 import IntroScene from "./scenes/intro-scene.js";
-import TestScene from "./scenes/controls-test-scene.js";
 import OptionsScene from "./scenes/options-scene.js";
+import VsScene from "./scenes/vs-scene.js";
+import EndFightMenuScene from "./scenes/end-fight-scene-menu.js";
+import DebugDrawPlugin from "phaser-plugin-debug-draw";
 
 const config = {
   title: "Clash of Fists",
@@ -24,17 +26,13 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
 
-  pixelArt: true,
+  // plugins: {
+  //   scene: [
+  //     { key: "DebugDrawPlugin", plugin: DebugDrawPlugin, mapping: "debugDraw" },
+  //   ],
+  // },
 
-  plugins: {
-    scene: [
-      {
-        key: "DebugDrawPlugin",
-        plugin: PhaserDebugDrawPlugin,
-        mapping: "debugDraw",
-      },
-    ],
-  },
+  pixelArt: true,
 
   banner: {
     hidePhaser: false,
@@ -47,25 +45,22 @@ const config = {
     default: "arcade",
     arcade: {
       // True para ver las hitboxes
-      debug: true,
-      // La gravity se aplica a todos los bodys de arcade
-      // gravity: {
-      //   y: 800,
-      // },
+      debug: false,
     },
   },
 
   scene: [
     BootLoader,
     FightScene,
-    TestScene,
     IntroScene,
+    EndFightMenuScene,
     MainMenuScene,
     MapSelectionScene,
-    CharacterSelectionScene,
+    FighterSelectionScene,
     PauseMenuScene,
     CreditsScene,
     OptionsScene,
+    VsScene,
   ],
 };
 

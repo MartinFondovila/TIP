@@ -2,26 +2,43 @@
   "name": "fighting-game",
   "version": "0.0.1-SNAPSHOT",
   "description": "Juego de pelea versus local.",
-  "main": "index.html",
+  "main": "/public/index.html",
   "scripts": {
-    "start": "snowpack dev",
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MartinFondovila/TIP.git"
+    "url": "https://github.com/MartinFondovila/TIP.git"
   },
   "author": "Martín Almada Fondovila",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/MartinFondovila/TIP/issues"
   },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
   "homepage": "https://github.com/MartinFondovila/TIP#readme",
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "json-loader": "^0.5.7",
+    "webpack": "^5.77.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.2",
+    "phaser-plugin-debug-draw": "^7.1.0"
+  },
   "dependencies": {
-    "mobx": "^6.8.0",
-    "phaser": "^3.55.2",
-    "phaser-plugin-debug-draw": "^7.0.0",
-    "phaser3-rex-plugins": "^1.1.79",
-    "snowpack": "^3.8.8"
+    "mobx": "^6.9.0",
+    "phaser": "^3.60.0",
+    "phaser3-rex-plugins": "^1.60.1"
   }
 }

@@ -1,0 +1,84 @@
+{
+  "anims": [
+    {
+      "key": "logoCracking",
+      "type": "frames",
+      "repeat": 0,
+      "frameRate": 12,
+      "frames": [
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "0"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "1"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "2"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "3"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "4"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "5"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "6"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "7"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "8"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "9"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "10"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "11"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "12"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "13"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "14"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "15"
+        },
+        {
+          "key": "clashOfFistsLogo",
+          "frame": "16"
+        },
+	{
+          "key": "clashOfFistsLogo",
+          "frame": "17"
+        }
+      ]
+    }
+  ]
+}

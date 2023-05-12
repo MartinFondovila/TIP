@@ -1,3 +1,5 @@
+import * as Phaser from "phaser";
+
 export class MatchTimer extends Phaser.GameObjects.Text {
   constructor(scene, x, y, time, styles, gameover, contextOfGameOver) {
     super(scene, x, y, time, styles);

@@ -1,5 +1,6 @@
 import BaseScene from "./base-scene.js";
-import { FighterSelectionContainer } from "../classes/fighter-selection-container.js";
+import { SFX_VOLUME } from "../classes/volume-states/sfx-volume-state.js";
+import SoundFade from "phaser3-rex-plugins/plugins/soundfade.js";
 
 class IntroScene extends BaseScene {
   constructor() {
@@ -10,27 +11,21 @@ class IntroScene extends BaseScene {
   }
 
   create() {
-    this.createBackground();
+    //this.createBackground();
     this.createFists();
     this.createClash();
     this.createIntroText();
     this.createTimelines();
     this.createTweens();
     this.createFistsCollider();
-    this.createAudios();
+    this.createSounds();
 
-    // Ver esto para que suene la musica
-    this.sound.pauseOnBlur = false;
-
+    this.windSound.play({ loop: -1, volume: SFX_VOLUME.sfxVolume / 8 });
     this.input.keyboard.once(
       this.inputKeyboardEvents.ANY_KEY_DOWN,
       this.startIntro,
       this
     );
-  }
-
-  createBackground() {
-    //this.add.image(0, 0, "introBackground").setOrigin(0, 0);
   }
 
   createFists() {
@@ -77,7 +72,7 @@ class IntroScene extends BaseScene {
       .text(
         this.conf.gameWidth * 0.5,
         this.conf.gameHeight - 40,
-        "PULSA CUALQUIER TECLA",
+        "PRESS ANY KEY",
         { fontSize: 35 }
       )
       .setOrigin(0.5, 1);
@@ -89,7 +84,7 @@ class IntroScene extends BaseScene {
   }
 
   createIntroTextTimelines() {
-    this.blinkTextIdleTimeline = this.tweens.timeline({
+    this.blinkTextIdleTimeline = this.tweens.chain({
       targets: [this.introText],
       loop: -1,
       tweens: [
@@ -106,13 +101,18 @@ class IntroScene extends BaseScene {
       ],
     });
 
-    this.blinkTextActiveTimeline = this.tweens.createTimeline({
+    this.blinkTextActiveTimeline = this.tweens.chain({
       targets: [this.introText],
       loop: 10,
-      onStart: () => {
+      // Ver porque onStart no se activa
+      // onStart: () => {
+      //   console.log("start");
+      // },
+      onResume: () => {
         this.introText.setTint(0xffff00);
-        this.blinkAudio.play();
+        this.introStartSound.play();
       },
+      paused: true,
       tweens: [
         {
           alpha: 0,
@@ -129,8 +129,9 @@ class IntroScene extends BaseScene {
   }
 
   createFistsTimelines() {
-    this.firstFistTimeline = this.tweens.createTimeline({
+    this.firstFistTimeline = this.tweens.chain({
       targets: [this.firstFist],
+      paused: true,
       tweens: [
         {
           x: this.firstFist.x - this.conf.gameWidth * 0.15,
@@ -152,8 +153,9 @@ class IntroScene extends BaseScene {
       ],
     });
 
-    this.secondFistTimeline = this.tweens.createTimeline({
+    this.secondFistTimeline = this.tweens.chain({
       targets: [this.secondFist],
+      paused: true,
       tweens: [
         {
           x: this.secondFist.x + this.conf.gameWidth * 0.15,
@@ -172,7 +174,7 @@ class IntroScene extends BaseScene {
           loop: 0,
           duration: 500,
           onStart: () => {
-            this.preClashAudio.play();
+            this.preClashSound.play();
           },
         },
       ],
@@ -209,10 +211,20 @@ class IntroScene extends BaseScene {
     );
   }
 
-  createAudios() {
-    this.clashAudio = this.sound.add("clashIntro");
-    this.blinkAudio = this.sound.add("blinkIntro");
-    this.preClashAudio = this.sound.add("preClash");
+  createSounds() {
+    this.clashSound = this.sound.add("introClash");
+    this.introStartSound = this.sound.add("introStart");
+    this.preClashSound = this.sound.add("introPreClash");
+    this.windSound = this.sound.add("introWind");
+
+    this.sfxSounds = [
+      this.clashSound,
+      this.introStartSound,
+      this.preClashSound,
+      this.windSound,
+    ];
+
+    this.updateSFXVolume(SFX_VOLUME.sfxVolume);
   }
 
   fistsDidntClash() {
@@ -222,16 +234,17 @@ class IntroScene extends BaseScene {
   startIntro() {
     this.fistsIdleTween.stop();
     this.blinkTextIdleTimeline.stop();
-    this.tweens.existing(this.blinkTextActiveTimeline);
-    this.tweens.existing(this.firstFistTimeline);
-    this.tweens.existing(this.secondFistTimeline);
+    SoundFade.fadeOut(this.windSound, 1300);
+    this.blinkTextActiveTimeline.resume();
+    this.firstFistTimeline.play();
+    this.secondFistTimeline.play();
   }
 
   clashOfFists() {
     this.clash = true;
     this.circle.setVisible(true);
-    this.clashTween.play();
-    this.clashAudio.play();
+    this.tweens.existing(this.clashTween);
+    this.clashSound.play();
     this.cameras.main.shake(1000, 0.01);
   }
 }

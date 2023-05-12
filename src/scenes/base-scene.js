@@ -1,10 +1,11 @@
+import * as Phaser from "phaser";
 import { SHARED_CONF } from "../utils.js";
-import { SFX_VOLUME } from "../classes/sfx-volume-state.js";
-import { MUSIC_VOLUME } from "../classes/music-volume-state.js";
+import { SFX_VOLUME } from "../classes/volume-states/sfx-volume-state.js";
+import { MUSIC_VOLUME } from "../classes/volume-states/music-volume-state.js";
 import { reaction } from "mobx";
 
 class BaseScene extends Phaser.Scene {
-  constructor(sceneName, pauseOnSwitch, pausePhysicsOnSwitch) {
+  constructor(sceneName) {
     if (new.target === BaseScene) {
       throw new TypeError(
         "No se puede instanciar esta clase porque es abstracta."
@@ -21,8 +22,6 @@ class BaseScene extends Phaser.Scene {
     this.loaderEvents = Phaser.Loader.Events;
     this.camerasEvents = Phaser.Cameras.Scene2D.Events;
 
-    this.hasToBePaused = pauseOnSwitch;
-    this.hasToPausePhysics = pausePhysicsOnSwitch;
     this.musicThemes = [];
     this.sfxSounds = [];
     this.keyName = sceneName;
@@ -31,15 +30,11 @@ class BaseScene extends Phaser.Scene {
   }
 
   createVolumeUpdaters() {
-    // No se ejecuta ni bien se crea
     this.musicVolumeUpdater = reaction(
       () => {
         return MUSIC_VOLUME.musicVolume;
       },
       (musicVolume) => {
-        console.log(this.keyName);
-        console.log("holasDesdeMusicUpdater");
-        console.log(MUSIC_VOLUME.musicVolume);
         this.updateMusicVolume(musicVolume);
       }
     );
@@ -47,8 +42,6 @@ class BaseScene extends Phaser.Scene {
     this.sfxVolumeUpdater = reaction(
       () => SFX_VOLUME.sfxVolume,
       (sfxVolume) => {
-        console.log("holas2");
-        console.log(this);
         this.updateSFXVolume(sfxVolume);
       }
     );
@@ -69,30 +62,8 @@ class BaseScene extends Phaser.Scene {
     });
   }
 
-  // Podria funcionar
-  switchScene(sceneName, data) {
-    if (this.scene.isPaused(sceneName)) {
-      this.scene.resume(sceneName, data);
-    } else if (this.scene.isSleeping(sceneName)) {
-      this.scene.wake(sceneName, data);
-    } else if (!this.scene.isActive(sceneName)) {
-      this.scene.launch(sceneName, data);
-    }
-    if (this.scene.get(sceneName).hasToPausePhysics) {
-      this.scene.get(sceneName).physics.resume();
-    }
-
-    this.scene.moveAbove(sceneName);
-
-    if (this.hasToBePaused) {
-      this.scene.pause(this.keyName);
-    } else {
-      this.scene.sleep(this.keyName);
-      console.log("me dormi");
-    }
-    if (this.hasToPausePhysics) {
-      this.physics.pause();
-    }
+  createBackground() {
+    this.add.image(0, 0, "background").setOrigin(0, 0);
   }
 }
 

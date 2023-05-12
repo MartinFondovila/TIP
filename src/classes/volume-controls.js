@@ -1,13 +1,20 @@
 export class VolumeControl extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, text, volumeState, exampleSound, blockSound) {
+  constructor(
+    scene,
+    x,
+    y,
+    text,
+    volumeState,
+    selectedTint,
+    exampleSound,
+    controls,
+    blockSound
+  ) {
     super(scene, x, y);
     this.inputKeyboard = Phaser.Input.Keyboard;
-    this.keyCodes = Phaser.Input.Keyboard.KeyCodes;
+    this.controls = controls;
     this.scene.add.existing(this);
-    this.controls = scene.input.keyboard.addKeys({
-      left: this.keyCodes.LEFT,
-      right: this.keyCodes.RIGHT,
-    });
+    this.selectedTint = selectedTint;
     this.volumeState = volumeState;
     this.isSelected = false;
     this.exampleSound = exampleSound;
@@ -49,9 +56,7 @@ export class VolumeControl extends Phaser.GameObjects.Container {
   }
 
   handleReduceVolume() {
-    console.log(this.volumeNumber.text);
     this.leftArrow.clearAlpha();
-    console.log(parseInt(this.volumeNumber.text) / 10);
     if (this.volumeNumber.text > 0) {
       let volume = parseInt(this.volumeNumber.text) - 1;
       this.volumeNumber.setText(volume);
@@ -66,8 +71,6 @@ export class VolumeControl extends Phaser.GameObjects.Container {
   }
 
   handleIncreaseVolume() {
-    console.log(this.volumeNumber.text);
-    console.log(parseInt(this.volumeNumber.text) / 10);
     this.rightArrow.clearAlpha();
     if (this.volumeNumber.text < 10) {
       let volume = parseInt(this.volumeNumber.text) + 1;
@@ -82,28 +85,31 @@ export class VolumeControl extends Phaser.GameObjects.Container {
     }
   }
 
-  // Refactorizar y no hacer sonido
-  handleSelect() {}
-
-  setTint(tint) {
-    this.volumneText.setTint(tint);
+  selectedIn() {
+    this.volumneText.setTint(this.selectedTint);
+    this.isSelected = true;
   }
 
-  clearTint() {
+  selectedOut() {
     this.volumneText.clearTint();
+    this.isSelected = false;
+  }
+
+  handleSelect() {
+    this.blockSound.play();
   }
 
   update() {
     if (this.isSelected) {
-      if (this.inputKeyboard.JustDown(this.controls.left)) {
+      if (this.inputKeyboard.JustDown(this.controls.reduce)) {
         this.handleReduceVolume();
-      } else if (this.inputKeyboard.JustDown(this.controls.right)) {
+      } else if (this.inputKeyboard.JustDown(this.controls.increase)) {
         this.handleIncreaseVolume();
       }
 
-      if (this.inputKeyboard.JustUp(this.controls.left)) {
+      if (this.inputKeyboard.JustUp(this.controls.reduce)) {
         this.leftArrow.setAlpha(0.5);
-      } else if (this.inputKeyboard.JustUp(this.controls.right)) {
+      } else if (this.inputKeyboard.JustUp(this.controls.increase)) {
         this.rightArrow.setAlpha(0.5);
       }
     }

@@ -1,14 +1,16 @@
 import BaseScene from "./base-scene.js";
 
 class BaseMenuScene extends BaseScene {
-  constructor(sceneName, pauseOnSwitch, pausePhysicsOnSwitch) {
+  constructor(sceneName) {
     if (new.target === BaseMenuScene) {
       throw new TypeError(
         "No se puede instanciar esta clase porque es abstracta."
       );
     }
-    super(sceneName, pauseOnSwitch, pausePhysicsOnSwitch);
+    super(sceneName);
     this.options = [];
+    this.selectedOption;
+    this.nextOptionStrategy;
   }
 
   createControls() {
@@ -19,16 +21,28 @@ class BaseMenuScene extends BaseScene {
       moveDown: this.keyCodes.DOWN,
       back: this.keyCodes.ESC,
       select: this.keyCodes.ENTER,
+      comodin: this.keyCodes.NUMPAD_ONE,
     });
   }
 
-  createBackOption() {
-    this.back = this.add
-      .text(this.conf.gameWidth - 10, this.conf.gameHeight - 10, "BACK", {
-        fontSize: 40,
-      })
-      .setOrigin(1, 1)
-      .setTint(0xffff00);
+  setSelectedOption(option, argsIn, argsOut) {
+    if (this.selectedOption) {
+      this.selectedOption.selectedOut(argsOut);
+    }
+    this.selectedOption = option;
+    this.selectedOption.selectedIn(argsIn);
+  }
+
+  setDefaultOption(argsIn, argsOut) {
+    this.setSelectedOption(this.getDefaultOption(), argsIn, argsOut);
+  }
+
+  getDefaultOption() {
+    return this.nextOptionStrategy.getDefaultOption(this.options);
+  }
+
+  handleSelectOnOption() {
+    this.selectedOption.handleSelect();
   }
 
   disableControls() {
@@ -38,7 +52,9 @@ class BaseMenuScene extends BaseScene {
   }
 
   enableControls() {
-    Object.values(this.controls).forEach((control) => (control.enabled = true));
+    Object.values(this.controls).forEach((control) => {
+      control.reset().enabled = true;
+    });
   }
 }
 

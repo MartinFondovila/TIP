@@ -1,18 +1,21 @@
 import { Fist } from "../attacks/fist.js";
-import { HealthBar } from "../health-bar/health-bar.js";
 import { Fighter } from "./fighter.js";
 
 export class Knight extends Fighter {
-  constructor(scene, x, y, controls, gravity) {
-    super(scene, x, y, controls, "knight", 0, 40, 10);
+  constructor(scene, x, y, controls, gravity, flipX) {
+    super(scene, x, y, controls, "knight", 0, 40);
 
-    this.healthBar = new HealthBar(scene, 200, 0, this.healthPoints);
     this.body.setGravityY(gravity);
+    this.body.setSize(25, 37);
+    this.body.setOffset(12, 11);
 
-    //this.fist = new Fist(scene, x - 15, y + 30, "fist", 10, this);
-    //this.fist.setCollideWorldBounds(true);
+    this.fist = new Fist(scene, "knightFist", 10, 100, this);
+    this.fist.setXOffset(10);
+    this.fist.setYOffset(26);
 
-    //this.attackHitbox = scene.add.rectangle(0, 0, 32, 64, 0xffffff, 0.5);
+    if (flipX) {
+      this.setFlipX(flipX);
+    }
   }
 
   // POR AHORA LO DEJO ASI, PERO CREO QUE SE TIENE QUE CAMBIAR
@@ -23,5 +26,17 @@ export class Knight extends Fighter {
     this.animationsMap.set("falling", "knightFalling");
     this.animationsMap.set("attacking", "knightAttacking");
     this.animationsMap.set("defeated", "knightDefeated");
+    this.animationsMap.set("fallingBlocking", "knightFallingBlock");
+    this.animationsMap.set("jumpingBlocking", "knightJumpingBlock");
+    this.animationsMap.set("victoryPose", "knightVictoryPose");
+    this.animationsMap.set("blocking", "knightBlocking");
+    this.animationsMap.set("attackingJumping", "knightJumpingAttack");
+    this.animationsMap.set("attackingFalling", "knightFallingAttack");
+    this.animationsMap.set("damaged", "knightDamaged");
+  }
+
+  update(deltaTime) {
+    this.stateMachine.update(deltaTime);
+    this.fist.update(deltaTime);
   }
 }
